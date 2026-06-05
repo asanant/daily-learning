@@ -10,22 +10,40 @@
         .container { max-width: 800px; margin: 0 auto; }
         .header { text-align: center; color: white; margin-bottom: 30px; }
         .date { font-size: 1.1em; opacity: 0.9; }
+        .nav { display: flex; gap: 10px; justify-content: center; margin: 20px 0; }
+        .nav a { background: rgba(255,255,255,0.2); color: white; padding: 10px 20px; border-radius: 25px; text-decoration: none; }
+        .nav a:hover { background: rgba(255,255,255,0.3); }
         .section { background: white; border-radius: 15px; padding: 25px; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
         .section-title { font-size: 1.4em; color: #333; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 3px solid #667eea; }
         .question { background: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 15px; border-left: 4px solid #667eea; }
         .q-title { font-weight: bold; color: #667eea; margin-bottom: 10px; }
         .options { margin: 15px 0; }
         .option { padding: 10px 15px; margin: 8px 0; background: white; border-radius: 8px; cursor: pointer; border: 2px solid #e0e0e0; transition: all 0.2s; }
-        .option:hover { border-color: #667eea; background: #f0f3ff; }
+        .option:hover:not(.disabled) { border-color: #667eea; background: #f0f3ff; }
+        .option.selected { border-color: #2196f3; background: #e3f2fd; }
+        .option.correct { border-color: #4caf50; background: #e8f5e9; }
+        .option.wrong { border-color: #f44336; background: #ffebee; }
+        .option.disabled { cursor: not-allowed; opacity: 0.8; }
         .answer-btn { background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; padding: 12px 25px; border-radius: 25px; cursor: pointer; font-size: 1em; margin-top: 10px; }
-        .answer { display: none; background: #e8f5e9; padding: 15px; border-radius: 8px; margin-top: 15px; border-left: 4px solid #4caf50; }
-        .answer.show { display: block; }
+        .answer-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .explanation { display: none; background: #e8f5e9; padding: 15px; border-radius: 8px; margin-top: 15px; border-left: 4px solid #4caf50; }
+        .explanation.show { display: block; }
         .reading { line-height: 1.8; color: #333; }
         .reading h3 { color: #667eea; margin: 20px 0 10px; }
         .word { background: #fff3cd; padding: 2px 8px; border-radius: 4px; font-weight: bold; }
         .vocab { background: #e3f2fd; padding: 15px; border-radius: 10px; margin-top: 20px; }
         .vocab h4 { color: #1976d2; margin-bottom: 10px; }
         .vocab-item { padding: 8px 0; border-bottom: 1px dashed #90caf9; }
+        .score-card { background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 20px; border-radius: 15px; text-align: center; margin-bottom: 20px; }
+        .score { font-size: 3em; font-weight: bold; }
+        .score-label { opacity: 0.9; }
+        .submit-section { text-align: center; margin: 20px 0; }
+        .submit-btn { background: linear-gradient(135deg, #4caf50, #45a049); color: white; border: none; padding: 15px 40px; border-radius: 30px; cursor: pointer; font-size: 1.1em; font-weight: bold; }
+        .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .history { margin-top: 30px; }
+        .history-item { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #eee; }
+        .history-date { color: #666; }
+        .history-score { font-weight: bold; color: #667eea; }
     </style>
 </head>
 <body>
@@ -33,83 +51,98 @@
         <div class="header">
             <h1>📚 每日学习</h1>
             <p class="date">2026年6月4日 星期四</p>
+            <div class="nav">
+                <a href="stats.html">📊 学习统计</a>
+            </div>
         </div>
 
         <div class="section">
             <h2 class="section-title">📱 Android 面试题（每日5题）</h2>
 
-            <div class="question">
+            <div class="question" id="q1" data-correct="B">
                 <p class="q-title">1. Activity 的生命周期方法有哪些？</p>
                 <div class="options">
-                    <div class="option">A. onCreate, onStart, onResume</div>
-                    <div class="option">B. onCreate, onStart, onResume, onPause, onStop, onDestroy</div>
-                    <div class="option">C. onCreate, onResume, onDestroy</div>
-                    <div class="option">D. onStart, onResume, onPause</div>
+                    <div class="option" data-value="A">A. onCreate, onStart, onResume</div>
+                    <div class="option" data-value="B">B. onCreate, onStart, onResume, onPause, onStop, onDestroy</div>
+                    <div class="option" data-value="C">C. onCreate, onResume, onDestroy</div>
+                    <div class="option" data-value="D">D. onStart, onResume, onPause</div>
                 </div>
-                <button class="answer-btn" onclick="this.nextElementSibling.classList.toggle('show')">查看答案</button>
-                <div class="answer">
+                <button class="answer-btn" onclick="toggleExplanation(1)">查看解析</button>
+                <div class="explanation">
                     <strong>✅ 答案：B</strong><br>
                     Activity 完整生命周期：onCreate() → onStart() → onResume() → onPause() → onStop() → onDestroy()。还有 onRestart() 在 Activity 从停止状态重新启动时调用。
                 </div>
             </div>
 
-            <div class="question">
+            <div class="question" id="q2" data-correct="B">
                 <p class="q-title">2. Fragment 和 Activity 的区别是什么？</p>
                 <div class="options">
-                    <div class="option">A. Fragment 不能有自己的布局</div>
-                    <div class="option">B. Fragment 必须嵌入 Activity 中使用</div>
-                    <div class="option">C. Fragment 比 Activity 运行更快</div>
-                    <div class="option">D. Activity 不能包含 Fragment</div>
+                    <div class="option" data-value="A">A. Fragment 不能有自己的布局</div>
+                    <div class="option" data-value="B">B. Fragment 必须嵌入 Activity 中使用</div>
+                    <div class="option" data-value="C">C. Fragment 比 Activity 运行更快</div>
+                    <div class="option" data-value="D">D. Activity 不能包含 Fragment</div>
                 </div>
-                <button class="answer-btn" onclick="this.nextElementSibling.classList.toggle('show')">查看答案</button>
-                <div class="answer">
+                <button class="answer-btn" onclick="toggleExplanation(2)">查看解析</button>
+                <div class="explanation">
                     <strong>✅ 答案：B</strong><br>
                     Fragment 不能独立存在，必须嵌入到 Activity 中。Fragment 是模块化的 UI 组件，可以在多个 Activity 中复用，支持动态添加、移除和替换。
                 </div>
             </div>
 
-            <div class="question">
+            <div class="question" id="q3" data-correct="A">
                 <p class="q-title">3. SharedPreferences 是线程安全的吗？</p>
                 <div class="options">
-                    <div class="option">A. 完全线程安全</div>
-                    <div class="option">B. 完全不安全</div>
-                    <div class="option">C. 读操作安全，写操作不安全</div>
-                    <div class="option">D. 只有 commit() 是安全的</div>
+                    <div class="option" data-value="A">A. 完全线程安全</div>
+                    <div class="option" data-value="B">B. 完全不安全</div>
+                    <div class="option" data-value="C">C. 读操作安全，写操作不安全</div>
+                    <div class="option" data-value="D">D. 只有 commit() 是安全的</div>
                 </div>
-                <button class="answer-btn" onclick="this.nextElementSibling.classList.toggle('show')">查看答案</button>
-                <div class="answer">
+                <button class="answer-btn" onclick="toggleExplanation(3)">查看解析</button>
+                <div class="explanation">
                     <strong>✅ 答案：A</strong><br>
                     SharedPreferences 本身是线程安全的（内存中操作），但跨进程不安全。commit() 同步写入磁盘，apply() 异步写入。推荐使用 apply() 避免 ANR。
                 </div>
             </div>
 
-            <div class="question">
+            <div class="question" id="q4" data-correct="B">
                 <p class="q-title">4. Handler、Looper、MessageQueue 的关系？</p>
                 <div class="options">
-                    <div class="option">A. 三者没有关系</div>
-                    <div class="option">B. Handler 发送消息到 MessageQueue，Looper 循环取出消息</div>
-                    <div class="option">C. Looper 直接处理消息</div>
-                    <div class="option">D. MessageQueue 创建 Handler</div>
+                    <div class="option" data-value="A">A. 三者没有关系</div>
+                    <div class="option" data-value="B">B. Handler 发送消息到 MessageQueue，Looper 循环取出消息</div>
+                    <div class="option" data-value="C">C. Looper 直接处理消息</div>
+                    <div class="option" data-value="D">D. MessageQueue 创建 Handler</div>
                 </div>
-                <button class="answer-btn" onclick="this.nextElementSibling.classList.toggle('show')">查看答案</button>
-                <div class="answer">
+                <button class="answer-btn" onclick="toggleExplanation(4)">查看解析</button>
+                <div class="explanation">
                     <strong>✅ 答案：B</strong><br>
                     Handler 发送 Message 到 MessageQueue，Looper.loop() 无限循环从 MessageQueue 取出消息，分发给对应的 Handler 处理。每个线程只能有一个 Looper。
                 </div>
             </div>
 
-            <div class="question">
+            <div class="question" id="q5" data-correct="B">
                 <p class="q-title">5. ANR 是什么？如何避免？</p>
                 <div class="options">
-                    <div class="option">A. ANR 是网络超时</div>
-                    <div class="option">B. ANR 是应用无响应（Application Not Responding）</div>
-                    <div class="option">C. ANR 是内存溢出</div>
-                    <div class="option">D. ANR 是编译错误</div>
+                    <div class="option" data-value="A">A. ANR 是网络超时</div>
+                    <div class="option" data-value="B">B. ANR 是应用无响应（Application Not Responding）</div>
+                    <div class="option" data-value="C">C. ANR 是内存溢出</div>
+                    <div class="option" data-value="D">D. ANR 是编译错误</div>
                 </div>
-                <button class="answer-btn" onclick="this.nextElementSibling.classList.toggle('show')">查看答案</button>
-                <div class="answer">
+                <button class="answer-btn" onclick="toggleExplanation(5)">查看解析</button>
+                <div class="explanation">
                     <strong>✅ 答案：B</strong><br>
                     ANR = Application Not Responding。触发条件：主线程 5 秒内无响应（Activity）或 BroadcastReceiver 10 秒内未完成。避免方法：耗时操作放子线程、使用协程、避免主线程 I/O。
+                </div>
+            </div>
+
+            <div class="submit-section">
+                <button class="submit-btn" id="submitBtn" onclick="submitAnswers()" disabled>提交答案</button>
+                <p id="submitHint" style="color: #999; margin-top: 10px;">请先选择所有题目的答案</p>
+            </div>
+
+            <div id="resultCard" style="display: none;">
+                <div class="score-card">
+                    <div class="score" id="scoreDisplay">0/5</div>
+                    <div class="score-label">今日得分</div>
                 </div>
             </div>
         </div>
@@ -145,5 +178,128 @@
             <p style="color: #999; margin-top: 10px;">坚持学习，每天进步一点点 💪</p>
         </div>
     </div>
+
+    <script>
+        const today = '2026-06-04';
+        let userAnswers = {};
+        let submitted = false;
+
+        // 初始化：点击选项
+        document.querySelectorAll('.question').forEach(q => {
+            const qNum = q.id.replace('q', '');
+            q.querySelectorAll('.option').forEach(opt => {
+                opt.addEventListener('click', () => {
+                    if (submitted) return;
+                    
+                    // 取消同题其他选项的选中
+                    q.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+                    // 选中当前选项
+                    opt.classList.add('selected');
+                    userAnswers[qNum] = opt.dataset.value;
+                    
+                    // 检查是否全部答完
+                    checkAllAnswered();
+                });
+            });
+        });
+
+        function checkAllAnswered() {
+            const btn = document.getElementById('submitBtn');
+            const hint = document.getElementById('submitHint');
+            if (Object.keys(userAnswers).length === 5) {
+                btn.disabled = false;
+                hint.textContent = '可以提交了！';
+                hint.style.color = '#4caf50';
+            } else {
+                btn.disabled = true;
+                hint.textContent = `已答 ${Object.keys(userAnswers).length}/5 题`;
+                hint.style.color = '#999';
+            }
+        }
+
+        function submitAnswers() {
+            if (submitted) return;
+            submitted = true;
+
+            let correct = 0;
+            document.querySelectorAll('.question').forEach(q => {
+                const qNum = q.id.replace('q', '');
+                const correctAnswer = q.dataset.correct;
+                const userAnswer = userAnswers[qNum];
+                const options = q.querySelectorAll('.option');
+
+                options.forEach(opt => {
+                    opt.classList.add('disabled');
+                    if (opt.dataset.value === correctAnswer) {
+                        opt.classList.add('correct');
+                    } else if (opt.dataset.value === userAnswer && userAnswer !== correctAnswer) {
+                        opt.classList.add('wrong');
+                    }
+                });
+
+                if (userAnswer === correctAnswer) correct++;
+            });
+
+            // 显示结果
+            document.getElementById('scoreDisplay').textContent = `${correct}/5`;
+            document.getElementById('resultCard').style.display = 'block';
+            document.getElementById('submitBtn').disabled = true;
+            document.getElementById('submitBtn').textContent = '已提交';
+
+            // 保存到 localStorage
+            const history = JSON.parse(localStorage.getItem('learning_history') || '{}');
+            history[today] = {
+                score: correct,
+                total: 5,
+                answers: userAnswers,
+                timestamp: new Date().toISOString()
+            };
+            localStorage.setItem('learning_history', JSON.stringify(history));
+
+            // 滚动到结果
+            document.getElementById('resultCard').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function toggleExplanation(num) {
+            document.querySelector(`#q${num} .explanation`).classList.toggle('show');
+        }
+
+        // 加载历史记录
+        function loadHistory() {
+            const history = JSON.parse(localStorage.getItem('learning_history') || '{}');
+            if (history[today]) {
+                // 今天的题已经做过
+                const data = history[today];
+                userAnswers = data.answers;
+                submitted = true;
+
+                document.querySelectorAll('.question').forEach(q => {
+                    const qNum = q.id.replace('q', '');
+                    const correctAnswer = q.dataset.correct;
+                    const userAnswer = userAnswers[qNum];
+
+                    q.querySelectorAll('.option').forEach(opt => {
+                        opt.classList.add('disabled');
+                        if (opt.dataset.value === userAnswer) {
+                            opt.classList.add('selected');
+                        }
+                        if (opt.dataset.value === correctAnswer) {
+                            opt.classList.add('correct');
+                        } else if (opt.dataset.value === userAnswer && userAnswer !== correctAnswer) {
+                            opt.classList.add('wrong');
+                        }
+                    });
+                });
+
+                document.getElementById('scoreDisplay').textContent = `${data.score}/5`;
+                document.getElementById('resultCard').style.display = 'block';
+                document.getElementById('submitBtn').disabled = true;
+                document.getElementById('submitBtn').textContent = '已提交';
+                document.getElementById('submitHint').textContent = '今日已完成';
+            }
+        }
+
+        loadHistory();
+    </script>
 </body>
 </html>
