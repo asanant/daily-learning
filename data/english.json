@@ -1,0 +1,28 @@
+{
+    "date": "2026-06-05",
+    "news": {
+        "title": "AI Technology Advancements in 2026",
+        "content": "Artificial intelligence continues to transform industries worldwide. Recent breakthroughs in large language models have enabled more natural human-computer interactions. Companies are investing heavily in AI research and development, with major tech giants leading the charge. The integration of AI into everyday applications is becoming more seamless, making technology more accessible to everyone.",
+        "vocabulary": [
+            {"word": "breakthrough", "meaning": "突破"},
+            {"word": "transform", "meaning": "转变"},
+            {"word": "interaction", "meaning": "交互"},
+            {"word": "integration", "meaning": "整合"},
+            {"word": "accessible", "meaning": "可访问的"}
+        ]
+    },
+    "vocabulary": [
+        {"word": "algorithm", "meaning": "算法", "example": "The algorithm optimizes the search process."},
+        {"word": "framework", "meaning": "框架", "example": "Android provides a robust framework for app development."},
+        {"word": "implementation", "meaning": "实现", "example": "The implementation of this feature took two weeks."},
+        {"word": "optimization", "meaning": "优化", "example": "Performance optimization is crucial for user experience."},
+        {"word": "architecture", "meaning": "架构", "example": "Clean architecture separates concerns effectively."}
+    ],
+    "sentences": [
+        {
+            "original": "The rapid advancement of AI technology has revolutionized the way we interact with digital devices.",
+            "translation": "AI技术的快速发展彻底改变了我们与数字设备互动的方式。",
+            "structure": "主语(The rapid advancement...) + 谓语(has revolutionized) + 宾语(the way...)"
+        }
+    ]
+}

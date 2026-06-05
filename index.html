@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>每日学习系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        
+        .card h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+        
+        .question {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 0 10px 10px 0;
+        }
+        
+        .question h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .question p {
+            color: #666;
+            line-height: 1.6;
+        }
+        
+        .answer {
+            background: #e8f5e9;
+            border-left: 4px solid #4caf50;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 0 10px 10px 0;
+            display: none;
+        }
+        
+        .answer.show {
+            display: block;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-size: 1em;
+            cursor: pointer;
+            margin: 10px 5px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+        }
+        
+        .progress {
+            background: #e9ecef;
+            border-radius: 10px;
+            height: 20px;
+            margin: 15px 0;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.5s;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 0.9em;
+        }
+        
+        .nav {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .nav .btn {
+            padding: 10px 20px;
+        }
+        
+        .section {
+            display: none;
+        }
+        
+        .section.active {
+            display: block;
+        }
+        
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 10px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+        
+        .vocab-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .vocab-item:last-child {
+            border-bottom: none;
+        }
+        
+        .vocab-en {
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .vocab-cn {
+            color: #666;
+        }
+        
+        @media (max-width: 600px) {
+            .stats {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📚 每日学习系统</h1>
+            <p id="date"></p>
+        </div>
+        
+        <div class="nav">
+            <button class="btn" onclick="showSection('android')">🤖 Android</button>
+            <button class="btn btn-secondary" onclick="showSection('english')">📖 英语</button>
+        </div>
+        
+        <!-- Android Section -->
+        <div id="android" class="section active">
+            <div class="card">
+                <h2>🤖 Android 每日刷题</h2>
+                
+                <div class="stats">
+                    <div class="stat-item">
+                        <div class="stat-number" id="android-count">0</div>
+                        <div class="stat-label">已答题</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" id="android-correct">0%</div>
+                        <div class="stat-label">正确率</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" id="android-streak">0</div>
+                        <div class="stat-label">连续答对</div>
+                    </div>
+                </div>
+                
+                <div class="progress">
+                    <div class="progress-bar" id="android-progress" style="width: 0%"></div>
+                </div>
+            </div>
+            
+            <div id="android-questions">
+                <!-- Questions will be loaded here -->
+            </div>
+        </div>
+        
+        <!-- English Section -->
+        <div id="english" class="section">
+            <div class="card">
+                <h2>📖 英语阅读训练</h2>
+                
+                <div class="stats">
+                    <div class="stat-item">
+                        <div class="stat-number" id="english-words">0</div>
+                        <div class="stat-label">今日生词</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" id="english-articles">0</div>
+                        <div class="stat-label">已读文章</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" id="english-time">0</div>
+                        <div class="stat-label">阅读时间(分)</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="english-content">
+                <!-- English content will be loaded here -->
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Set current date
+        const now = new Date();
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        document.getElementById('date').textContent = now.toLocaleDateString('zh-CN', options);
+        
+        // Navigation
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav .btn').forEach(b => b.classList.remove('btn'));
+            document.querySelectorAll('.nav .btn').forEach(b => b.classList.add('btn-secondary'));
+            
+            document.getElementById(sectionId).classList.add('active');
+            event.target.classList.remove('btn-secondary');
+            event.target.classList.add('btn');
+        }
+        
+        // Toggle answer visibility
+        function toggleAnswer(id) {
+            const answer = document.getElementById(id);
+            answer.classList.toggle('show');
+        }
+        
+        // Load content from data files
+        async function loadContent() {
+            try {
+                // Load Android questions
+                const androidResponse = await fetch('/data/android.json');
+                if (androidResponse.ok) {
+                    const androidData = await androidResponse.json();
+                    renderAndroidQuestions(androidData);
+                }
+                
+                // Load English content
+                const englishResponse = await fetch('/data/english.json');
+                if (englishResponse.ok) {
+                    const englishData = await englishResponse.json();
+                    renderEnglishContent(englishData);
+                }
+            } catch (error) {
+                console.log('Loading default content...');
+                loadDefaultContent();
+            }
+        }
+        
+        function renderAndroidQuestions(data) {
+            const container = document.getElementById('android-questions');
+            container.innerHTML = '';
+            
+            data.questions.forEach((q, index) => {
+                const questionHtml = `
+                    <div class="card">
+                        <div class="question">
+                            <h3>题目 ${index + 1}: ${q.title}</h3>
+                            <p>${q.content}</p>
+                            ${q.code ? `<div class="code-block"><pre>${q.code}</pre></div>` : ''}
+                        </div>
+                        <button class="btn" onclick="toggleAnswer('answer-${index}')">
+                            查看答案
+                        </button>
+                        <div id="answer-${index}" class="answer">
+                            <h4>答案：</h4>
+                            <p>${q.answer}</p>
+                            ${q.explanation ? `<p><strong>解析：</strong>${q.explanation}</p>` : ''}
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += questionHtml;
+            });
+        }
+        
+        function renderEnglishContent(data) {
+            const container = document.getElementById('english-content');
+            container.innerHTML = '';
+            
+            // News article
+            if (data.news) {
+                container.innerHTML += `
+                    <div class="card">
+                        <h2>📰 科技新闻</h2>
+                        <h3>${data.news.title}</h3>
+                        <p>${data.news.content}</p>
+                        <button class="btn" onclick="toggleAnswer('news-vocab')">
+                            查看生词
+                        </button>
+                        <div id="news-vocab" class="answer">
+                            ${data.news.vocabulary.map(v => `
+                                <div class="vocab-item">
+                                    <span class="vocab-en">${v.word}</span>
+                                    <span class="vocab-cn">${v.meaning}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Daily vocabulary
+            if (data.vocabulary) {
+                container.innerHTML += `
+                    <div class="card">
+                        <h2>📝 每日生词</h2>
+                        ${data.vocabulary.map(v => `
+                            <div class="vocab-item">
+                                <span class="vocab-en">${v.word}</span>
+                                <span class="vocab-cn">${v.meaning}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+        }
+        
+        function loadDefaultContent() {
+            // Default Android questions
+            const defaultAndroid = {
+                questions: [
+                    {
+                        title: "Handler 内存泄漏",
+                        content: "以下代码会导致什么问题？如何修复？",
+                        code: "class MainActivity : AppCompatActivity() {\n    private val handler = object : Handler(Looper.getMainLooper()) {\n        override fun handleMessage(msg: Message) {\n            textView.text = \"更新UI\"\n            sendEmptyMessageDelayed(0, 1000)\n        }\n    }\n}",
+                        answer: "会导致内存泄漏。因为匿名内部类持有外部Activity的引用，延迟消息会阻止Activity被GC回收。",
+                        explanation: "修复方案：使用WeakReference或LifecycleScope。"
+                    },
+                    {
+                        title: "协程取消",
+                        content: "以下代码中，协程能正确取消吗？",
+                        code: "lifecycleScope.launch {\n    while (true) {\n        delay(1000)\n        updateUI()\n    }\n}",
+                        answer: "能正确取消。delay()是挂起函数，会检查协程的取消状态。",
+                        explanation: "如果使用Thread.sleep()则无法取消，因为sleep不会检查取消状态。"
+                    }
+                ]
+            };
+            
+            const defaultEnglish = {
+                news: {
+                    title: "AI Technology Advancements",
+                    content: "Artificial intelligence continues to transform industries worldwide. Recent breakthroughs in large language models have enabled more natural human-computer interactions. Companies are investing heavily in AI research and development.",
+                    vocabulary: [
+                        { word: "breakthrough", meaning: "突破" },
+                        { word: "transform", meaning: "转变" },
+                        { word: "interaction", meaning: "交互" }
+                    ]
+                },
+                vocabulary: [
+                    { word: "algorithm", meaning: "算法" },
+                    { word: "framework", meaning: "框架" },
+                    { word: "implementation", meaning: "实现" },
+                    { word: "optimization", meaning: "优化" },
+                    { word: "architecture", meaning: "架构" }
+                ]
+            };
+            
+            renderAndroidQuestions(defaultAndroid);
+            renderEnglishContent(defaultEnglish);
+        }
+        
+        // Initialize
+        loadContent();
+    </script>
+</body>
+</html>

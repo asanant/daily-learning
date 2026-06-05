@@ -1,0 +1,19 @@
+{
+    "date": "2026-06-05",
+    "questions": [
+        {
+            "title": "Handler 内存泄漏",
+            "content": "以下代码会导致什么问题？如何修复？",
+            "code": "class MainActivity : AppCompatActivity() {\n    private val handler = object : Handler(Looper.getMainLooper()) {\n        override fun handleMessage(msg: Message) {\n            textView.text = \"更新UI\"\n            sendEmptyMessageDelayed(0, 1000)\n        }\n    }\n}",
+            "answer": "会导致内存泄漏。匿名内部类持有外部Activity的引用，延迟消息会阻止Activity被GC回收。",
+            "explanation": "修复方案：使用WeakReference或LifecycleScope。"
+        },
+        {
+            "title": "协程取消机制",
+            "content": "以下代码中，协程能正确取消吗？为什么？",
+            "code": "lifecycleScope.launch {\n    while (true) {\n        delay(1000)\n        updateUI()\n    }\n}",
+            "answer": "能正确取消。delay()是挂起函数，会检查协程的取消状态。",
+            "explanation": "如果使用Thread.sleep()则无法取消，因为sleep不会检查取消状态。"
+        }
+    ]
+}
