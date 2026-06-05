@@ -10,9 +10,13 @@
         .container { max-width: 800px; margin: 0 auto; }
         .header { text-align: center; color: white; margin-bottom: 30px; }
         .date { font-size: 1.1em; opacity: 0.9; }
-        .nav { display: flex; gap: 10px; justify-content: center; margin: 20px 0; }
+        .nav { display: flex; gap: 10px; justify-content: center; margin: 20px 0; flex-wrap: wrap; }
         .nav a { background: rgba(255,255,255,0.2); color: white; padding: 10px 20px; border-radius: 25px; text-decoration: none; }
         .nav a:hover { background: rgba(255,255,255,0.3); }
+        .sync-status { text-align: center; margin: 10px 0; font-size: 0.9em; }
+        .sync-status .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 5px; }
+        .sync-status .dot.online { background: #4caf50; }
+        .sync-status .dot.offline { background: #ff9800; }
         .section { background: white; border-radius: 15px; padding: 25px; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
         .section-title { font-size: 1.4em; color: #333; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 3px solid #667eea; }
         .question { background: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 15px; border-left: 4px solid #667eea; }
@@ -25,7 +29,6 @@
         .option.wrong { border-color: #f44336; background: #ffebee; }
         .option.disabled { cursor: not-allowed; opacity: 0.8; }
         .answer-btn { background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; padding: 12px 25px; border-radius: 25px; cursor: pointer; font-size: 1em; margin-top: 10px; }
-        .answer-btn:disabled { opacity: 0.5; cursor: not-allowed; }
         .explanation { display: none; background: #e8f5e9; padding: 15px; border-radius: 8px; margin-top: 15px; border-left: 4px solid #4caf50; }
         .explanation.show { display: block; }
         .reading { line-height: 1.8; color: #333; }
@@ -40,10 +43,8 @@
         .submit-section { text-align: center; margin: 20px 0; }
         .submit-btn { background: linear-gradient(135deg, #4caf50, #45a049); color: white; border: none; padding: 15px 40px; border-radius: 30px; cursor: pointer; font-size: 1.1em; font-weight: bold; }
         .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-        .history { margin-top: 30px; }
-        .history-item { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #eee; }
-        .history-date { color: #666; }
-        .history-score { font-weight: bold; color: #667eea; }
+        .total-score { background: linear-gradient(135deg, #ff9800, #f57c00); color: white; padding: 15px; border-radius: 10px; text-align: center; margin: 20px 0; }
+        .device-id { text-align: center; font-size: 0.8em; color: rgba(255,255,255,0.7); margin-top: 10px; }
     </style>
 </head>
 <body>
@@ -54,10 +55,15 @@
             <div class="nav">
                 <a href="stats.html">📊 学习统计</a>
             </div>
+            <div class="sync-status">
+                <span class="dot" id="syncDot"></span>
+                <span id="syncText">连接中...</span>
+            </div>
         </div>
 
+        <!-- Android 面试题 -->
         <div class="section">
-            <h2 class="section-title">📱 Android 面试题（每日5题）</h2>
+            <h2 class="section-title">📱 Android 面试题（5题）</h2>
 
             <div class="question" id="q1" data-correct="B">
                 <p class="q-title">1. Activity 的生命周期方法有哪些？</p>
@@ -67,7 +73,7 @@
                     <div class="option" data-value="C">C. onCreate, onResume, onDestroy</div>
                     <div class="option" data-value="D">D. onStart, onResume, onPause</div>
                 </div>
-                <button class="answer-btn" onclick="toggleExplanation(1)">查看解析</button>
+                <button class="answer-btn" onclick="toggleExplanation('q1')">查看解析</button>
                 <div class="explanation">
                     <strong>✅ 答案：B</strong><br>
                     Activity 完整生命周期：onCreate() → onStart() → onResume() → onPause() → onStop() → onDestroy()。还有 onRestart() 在 Activity 从停止状态重新启动时调用。
@@ -82,7 +88,7 @@
                     <div class="option" data-value="C">C. Fragment 比 Activity 运行更快</div>
                     <div class="option" data-value="D">D. Activity 不能包含 Fragment</div>
                 </div>
-                <button class="answer-btn" onclick="toggleExplanation(2)">查看解析</button>
+                <button class="answer-btn" onclick="toggleExplanation('q2')">查看解析</button>
                 <div class="explanation">
                     <strong>✅ 答案：B</strong><br>
                     Fragment 不能独立存在，必须嵌入到 Activity 中。Fragment 是模块化的 UI 组件，可以在多个 Activity 中复用，支持动态添加、移除和替换。
@@ -97,7 +103,7 @@
                     <div class="option" data-value="C">C. 读操作安全，写操作不安全</div>
                     <div class="option" data-value="D">D. 只有 commit() 是安全的</div>
                 </div>
-                <button class="answer-btn" onclick="toggleExplanation(3)">查看解析</button>
+                <button class="answer-btn" onclick="toggleExplanation('q3')">查看解析</button>
                 <div class="explanation">
                     <strong>✅ 答案：A</strong><br>
                     SharedPreferences 本身是线程安全的（内存中操作），但跨进程不安全。commit() 同步写入磁盘，apply() 异步写入。推荐使用 apply() 避免 ANR。
@@ -112,7 +118,7 @@
                     <div class="option" data-value="C">C. Looper 直接处理消息</div>
                     <div class="option" data-value="D">D. MessageQueue 创建 Handler</div>
                 </div>
-                <button class="answer-btn" onclick="toggleExplanation(4)">查看解析</button>
+                <button class="answer-btn" onclick="toggleExplanation('q4')">查看解析</button>
                 <div class="explanation">
                     <strong>✅ 答案：B</strong><br>
                     Handler 发送 Message 到 MessageQueue，Looper.loop() 无限循环从 MessageQueue 取出消息，分发给对应的 Handler 处理。每个线程只能有一个 Looper。
@@ -127,30 +133,18 @@
                     <div class="option" data-value="C">C. ANR 是内存溢出</div>
                     <div class="option" data-value="D">D. ANR 是编译错误</div>
                 </div>
-                <button class="answer-btn" onclick="toggleExplanation(5)">查看解析</button>
+                <button class="answer-btn" onclick="toggleExplanation('q5')">查看解析</button>
                 <div class="explanation">
                     <strong>✅ 答案：B</strong><br>
                     ANR = Application Not Responding。触发条件：主线程 5 秒内无响应（Activity）或 BroadcastReceiver 10 秒内未完成。避免方法：耗时操作放子线程、使用协程、避免主线程 I/O。
                 </div>
             </div>
-
-            <div class="submit-section">
-                <button class="submit-btn" id="submitBtn" onclick="submitAnswers()" disabled>提交答案</button>
-                <p id="submitHint" style="color: #999; margin-top: 10px;">请先选择所有题目的答案</p>
-            </div>
-
-            <div id="resultCard" style="display: none;">
-                <div class="score-card">
-                    <div class="score" id="scoreDisplay">0/5</div>
-                    <div class="score-label">今日得分</div>
-                </div>
-            </div>
         </div>
 
+        <!-- 英语阅读 -->
         <div class="section">
-            <h2 class="section-title">📖 英语阅读</h2>
+            <h2 class="section-title">📖 英语阅读：Apple Announces New AI Features</h2>
             <div class="reading">
-                <h3>Apple Announces New AI Features for iPhone</h3>
                 <p>Apple has announced a series of new artificial intelligence features for its upcoming iPhone models. The company said these AI capabilities will <span class="word">revolutionize</span> how users interact with their devices.</p>
 
                 <p>The new features include an improved Siri that can understand <span class="word">context</span> better, an AI-powered photo editor, and real-time language <span class="word">translation</span>. Apple's CEO said the company has been working on these technologies for years.</p>
@@ -160,15 +154,106 @@
                 <p>Industry experts say Apple is catching up with competitors like Google and Samsung, who have already <span class="word">integrated</span> similar AI features into their phones. However, Apple's focus on privacy could give it an advantage.</p>
 
                 <p>The new AI features will be available as a free software update this fall.</p>
+            </div>
 
-                <div class="vocab">
-                    <h4>📝 今日词汇</h4>
-                    <div class="vocab-item"><strong>revolutionize</strong> /ˌrevəˈluːʃənaɪz/ - 彻底改变</div>
-                    <div class="vocab-item"><strong>context</strong> /ˈkɒntekst/ - 上下文，语境</div>
-                    <div class="vocab-item"><strong>translation</strong> /trænsˈleɪʃn/ - 翻译</div>
-                    <div class="vocab-item"><strong>personal</strong> /ˈpɜːsənl/ - 个人的</div>
-                    <div class="vocab-item"><strong>private</strong> /ˈpraɪvət/ - 私密的</div>
-                    <div class="vocab-item"><strong>integrate</strong> /ˈɪntɪɡreɪt/ - 整合，集成</div>
+            <!-- 英语阅读题 -->
+            <div class="question" id="q6" data-correct="B">
+                <p class="q-title">6. What will the new AI capabilities do?</p>
+                <div class="options">
+                    <div class="option" data-value="A">A. Make phones cheaper</div>
+                    <div class="option" data-value="B">B. Revolutionize how users interact with devices</div>
+                    <div class="option" data-value="C">C. Replace all other phones</div>
+                    <div class="option" data-value="D">D. Only work with Siri</div>
+                </div>
+                <button class="answer-btn" onclick="toggleExplanation('q6')">查看解析</button>
+                <div class="explanation">
+                    <strong>✅ 答案：B</strong><br>
+                    原文："these AI capabilities will revolutionize how users interact with their devices"
+                </div>
+            </div>
+
+            <div class="question" id="q7" data-correct="C">
+                <p class="q-title">7. How does Apple process most AI data?</p>
+                <div class="options">
+                    <div class="option" data-value="A">A. In the cloud</div>
+                    <div class="option" data-value="B">B. Using Google servers</div>
+                    <div class="option" data-value="C">C. Directly on the device</div>
+                    <div class="option" data-value="D">D. Through Samsung</div>
+                </div>
+                <button class="answer-btn" onclick="toggleExplanation('q7')">查看解析</button>
+                <div class="explanation">
+                    <strong>✅ 答案：C</strong><br>
+                    原文："Our approach processes most data directly on the device, rather than sending it to the cloud."
+                </div>
+            </div>
+
+            <div class="question" id="q8" data-correct="A">
+                <p class="q-title">8. 选出 "revolutionize" 的正确中文意思：</p>
+                <div class="options">
+                    <div class="option" data-value="A">A. 彻底改变</div>
+                    <div class="option" data-value="B">B. 革命</div>
+                    <div class="option" data-value="C">C. 进化</div>
+                    <div class="option" data-value="D">D. 发展</div>
+                </div>
+                <button class="answer-btn" onclick="toggleExplanation('q8')">查看解析</button>
+                <div class="explanation">
+                    <strong>✅ 答案：A</strong><br>
+                    revolutionize = 彻底改变、使发生革命性变化
+                </div>
+            </div>
+
+            <div class="question" id="q9" data-correct="D">
+                <p class="q-title">9. When will the new AI features be available?</p>
+                <div class="options">
+                    <div class="option" data-value="A">A. Next week</div>
+                    <div class="option" data-value="B">B. Next month</div>
+                    <div class="option" data-value="C">C. Next year</div>
+                    <div class="option" data-value="D">D. This fall</div>
+                </div>
+                <button class="answer-btn" onclick="toggleExplanation('q9')">查看解析</button>
+                <div class="explanation">
+                    <strong>✅ 答案：D</strong><br>
+                    原文："The new AI features will be available as a free software update this fall."
+                </div>
+            </div>
+
+            <div class="question" id="q10" data-correct="B">
+                <p class="q-title">10. What advantage does Apple have over competitors?</p>
+                <div class="options">
+                    <div class="option" data-value="A">A. Lower prices</div>
+                    <div class="option" data-value="B">B. Focus on privacy</div>
+                    <div class="option" data-value="C">C. Better cameras</div>
+                    <div class="option" data-value="D">D. Faster processors</div>
+                </div>
+                <button class="answer-btn" onclick="toggleExplanation('q10')">查看解析</button>
+                <div class="explanation">
+                    <strong>✅ 答案：B</strong><br>
+                    原文："Apple's focus on privacy could give it an advantage."
+                </div>
+            </div>
+
+            <div class="vocab">
+                <h4>📝 今日词汇</h4>
+                <div class="vocab-item"><strong>revolutionize</strong> /ˌrevəˈluːʃənaɪz/ - 彻底改变</div>
+                <div class="vocab-item"><strong>context</strong> /ˈkɒntekst/ - 上下文，语境</div>
+                <div class="vocab-item"><strong>translation</strong> /trænsˈleɪʃn/ - 翻译</div>
+                <div class="vocab-item"><strong>personal</strong> /ˈpɜːsənl/ - 个人的</div>
+                <div class="vocab-item"><strong>private</strong> /ˈpraɪvət/ - 私密的</div>
+                <div class="vocab-item"><strong>integrate</strong> /ˈɪntɪɡreɪt/ - 整合，集成</div>
+            </div>
+        </div>
+
+        <!-- 提交按钮 -->
+        <div class="section">
+            <div class="submit-section">
+                <button class="submit-btn" id="submitBtn" onclick="submitAnswers()" disabled>提交全部答案</button>
+                <p id="submitHint" style="color: #999; margin-top: 10px;">请先选择所有题目的答案 (0/10)</p>
+            </div>
+            <div id="resultCard" style="display: none;">
+                <div class="total-score">
+                    <div style="font-size: 1.2em;">今日总分</div>
+                    <div style="font-size: 2.5em; font-weight: bold;" id="totalScoreDisplay">0/10</div>
+                    <div style="font-size: 0.9em; opacity: 0.9;">Android: <span id="androidScore">0</span>/5 | 英语: <span id="englishScore">0</span>/5</div>
                 </div>
             </div>
         </div>
@@ -177,27 +262,70 @@
             <p style="color: #666;">📅 每天 9:00 推送 Android 题 · 12:00 推送英语阅读</p>
             <p style="color: #999; margin-top: 10px;">坚持学习，每天进步一点点 💪</p>
         </div>
+        
+        <div class="device-id">设备ID: <span id="deviceId"></span></div>
     </div>
 
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+    
     <script>
+        // Firebase 配置（需要替换成你自己的）
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT.firebaseapp.com",
+            databaseURL: "https://YOUR_PROJECT-default-rtdb.firebaseio.com",
+            projectId: "YOUR_PROJECT",
+            storageBucket: "YOUR_PROJECT.appspot.com",
+            messagingSenderId: "YOUR_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        // 初始化 Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        // 设备ID
+        function getDeviceId() {
+            let deviceId = localStorage.getItem('device_id');
+            if (!deviceId) {
+                deviceId = 'device_' + Math.random().toString(36).substr(2, 9);
+                localStorage.setItem('device_id', deviceId);
+            }
+            return deviceId;
+        }
+
+        const deviceId = getDeviceId();
         const today = '2026-06-04';
         let userAnswers = {};
         let submitted = false;
 
-        // 初始化：点击选项
+        document.getElementById('deviceId').textContent = deviceId;
+
+        // 检查连接状态
+        const connectedRef = db.ref('.info/connected');
+        connectedRef.on('value', (snap) => {
+            const dot = document.getElementById('syncDot');
+            const text = document.getElementById('syncText');
+            if (snap.val() === true) {
+                dot.className = 'dot online';
+                text.textContent = '已连接云端';
+            } else {
+                dot.className = 'dot offline';
+                text.textContent = '离线模式';
+            }
+        });
+
+        // 点击选项
         document.querySelectorAll('.question').forEach(q => {
-            const qNum = q.id.replace('q', '');
+            const qId = q.id;
             q.querySelectorAll('.option').forEach(opt => {
                 opt.addEventListener('click', () => {
                     if (submitted) return;
-                    
-                    // 取消同题其他选项的选中
                     q.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
-                    // 选中当前选项
                     opt.classList.add('selected');
-                    userAnswers[qNum] = opt.dataset.value;
-                    
-                    // 检查是否全部答完
+                    userAnswers[qId] = opt.dataset.value;
                     checkAllAnswered();
                 });
             });
@@ -206,29 +334,32 @@
         function checkAllAnswered() {
             const btn = document.getElementById('submitBtn');
             const hint = document.getElementById('submitHint');
-            if (Object.keys(userAnswers).length === 5) {
+            const count = Object.keys(userAnswers).length;
+            if (count === 10) {
                 btn.disabled = false;
                 hint.textContent = '可以提交了！';
                 hint.style.color = '#4caf50';
             } else {
                 btn.disabled = true;
-                hint.textContent = `已答 ${Object.keys(userAnswers).length}/5 题`;
+                hint.textContent = `请先选择所有题目的答案 (${count}/10)`;
                 hint.style.color = '#999';
             }
         }
 
-        function submitAnswers() {
+        async function submitAnswers() {
             if (submitted) return;
             submitted = true;
 
-            let correct = 0;
-            document.querySelectorAll('.question').forEach(q => {
-                const qNum = q.id.replace('q', '');
-                const correctAnswer = q.dataset.correct;
-                const userAnswer = userAnswers[qNum];
-                const options = q.querySelectorAll('.option');
+            let androidCorrect = 0;
+            let englishCorrect = 0;
 
-                options.forEach(opt => {
+            document.querySelectorAll('.question').forEach(q => {
+                const qId = q.id;
+                const correctAnswer = q.dataset.correct;
+                const userAnswer = userAnswers[qId];
+                const qNum = parseInt(qId.replace('q', ''));
+                
+                q.querySelectorAll('.option').forEach(opt => {
                     opt.classList.add('disabled');
                     if (opt.dataset.value === correctAnswer) {
                         opt.classList.add('correct');
@@ -237,69 +368,90 @@
                     }
                 });
 
-                if (userAnswer === correctAnswer) correct++;
+                if (userAnswer === correctAnswer) {
+                    if (qNum <= 5) androidCorrect++;
+                    else englishCorrect++;
+                }
             });
 
+            const totalCorrect = androidCorrect + englishCorrect;
+            
             // 显示结果
-            document.getElementById('scoreDisplay').textContent = `${correct}/5`;
+            document.getElementById('totalScoreDisplay').textContent = `${totalCorrect}/10`;
+            document.getElementById('androidScore').textContent = androidCorrect;
+            document.getElementById('englishScore').textContent = englishCorrect;
             document.getElementById('resultCard').style.display = 'block';
             document.getElementById('submitBtn').disabled = true;
-            document.getElementById('submitBtn').textContent = '已提交';
+            document.getElementById('submitBtn').textContent = '已提交 ✓';
 
-            // 保存到 localStorage
-            const history = JSON.parse(localStorage.getItem('learning_history') || '{}');
-            history[today] = {
-                score: correct,
-                total: 5,
+            // 保存到 Firebase
+            const record = {
+                score: totalCorrect,
+                total: 10,
+                android: { score: androidCorrect, total: 5 },
+                english: { score: englishCorrect, total: 5 },
                 answers: userAnswers,
-                timestamp: new Date().toISOString()
+                timestamp: firebase.database.ServerValue.TIMESTAMP,
+                device: deviceId
             };
-            localStorage.setItem('learning_history', JSON.stringify(history));
 
-            // 滚动到结果
+            try {
+                await db.ref(`history/${today}/${deviceId}`).set(record);
+                console.log('数据已同步到云端');
+            } catch (error) {
+                console.error('同步失败:', error);
+                const localHistory = JSON.parse(localStorage.getItem('learning_history') || '{}');
+                localHistory[today] = record;
+                localStorage.setItem('learning_history', JSON.stringify(localHistory));
+            }
+
             document.getElementById('resultCard').scrollIntoView({ behavior: 'smooth' });
         }
 
-        function toggleExplanation(num) {
-            document.querySelector(`#q${num} .explanation`).classList.toggle('show');
+        function toggleExplanation(qId) {
+            document.querySelector(`#${qId} .explanation`).classList.toggle('show');
         }
 
-        // 加载历史记录
-        function loadHistory() {
-            const history = JSON.parse(localStorage.getItem('learning_history') || '{}');
-            if (history[today]) {
-                // 今天的题已经做过
-                const data = history[today];
-                userAnswers = data.answers;
-                submitted = true;
+        // 加载今天的记录
+        async function loadTodayRecord() {
+            try {
+                const snapshot = await db.ref(`history/${today}/${deviceId}`).once('value');
+                const data = snapshot.val();
+                
+                if (data) {
+                    userAnswers = data.answers;
+                    submitted = true;
 
-                document.querySelectorAll('.question').forEach(q => {
-                    const qNum = q.id.replace('q', '');
-                    const correctAnswer = q.dataset.correct;
-                    const userAnswer = userAnswers[qNum];
+                    document.querySelectorAll('.question').forEach(q => {
+                        const qId = q.id;
+                        const correctAnswer = q.dataset.correct;
+                        const userAnswer = userAnswers[qId];
 
-                    q.querySelectorAll('.option').forEach(opt => {
-                        opt.classList.add('disabled');
-                        if (opt.dataset.value === userAnswer) {
-                            opt.classList.add('selected');
-                        }
-                        if (opt.dataset.value === correctAnswer) {
-                            opt.classList.add('correct');
-                        } else if (opt.dataset.value === userAnswer && userAnswer !== correctAnswer) {
-                            opt.classList.add('wrong');
-                        }
+                        q.querySelectorAll('.option').forEach(opt => {
+                            opt.classList.add('disabled');
+                            if (opt.dataset.value === userAnswer) opt.classList.add('selected');
+                            if (opt.dataset.value === correctAnswer) opt.classList.add('correct');
+                            else if (opt.dataset.value === userAnswer && userAnswer !== correctAnswer) opt.classList.add('wrong');
+                        });
                     });
-                });
 
-                document.getElementById('scoreDisplay').textContent = `${data.score}/5`;
-                document.getElementById('resultCard').style.display = 'block';
-                document.getElementById('submitBtn').disabled = true;
-                document.getElementById('submitBtn').textContent = '已提交';
-                document.getElementById('submitHint').textContent = '今日已完成';
+                    const androidScore = data.android ? data.android.score : 0;
+                    const englishScore = data.english ? data.english.score : 0;
+
+                    document.getElementById('totalScoreDisplay').textContent = `${data.score}/10`;
+                    document.getElementById('androidScore').textContent = androidScore;
+                    document.getElementById('englishScore').textContent = englishScore;
+                    document.getElementById('resultCard').style.display = 'block';
+                    document.getElementById('submitBtn').disabled = true;
+                    document.getElementById('submitBtn').textContent = '已提交 ✓';
+                    document.getElementById('submitHint').textContent = '今日已完成';
+                }
+            } catch (error) {
+                console.log('加载失败，使用本地数据');
             }
         }
 
-        loadHistory();
+        loadTodayRecord();
     </script>
 </body>
 </html>
