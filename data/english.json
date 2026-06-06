@@ -1,28 +1,46 @@
 {
-    "date": "2026-06-05",
+    "date": "2026-06-06",
     "news": {
-        "title": "AI Technology Advancements in 2026",
-        "content": "Artificial intelligence continues to transform industries worldwide. Recent breakthroughs in large language models have enabled more natural human-computer interactions. Companies are investing heavily in AI research and development, with major tech giants leading the charge. The integration of AI into everyday applications is becoming more seamless, making technology more accessible to everyone.",
+        "title": "Apple Unveils AI-Powered Smart Glasses at WWDC 2026",
+        "content": "Apple announced its long-awaited smart glasses at the Worldwide Developers Conference on Monday, marking the company's boldest push into wearable artificial intelligence. The device, called Apple Vision Lite, weighs just 45 grams and features a transparent micro-OLED display that overlays digital information onto the real world.\n\nUnlike the bulky Vision Pro headset released in 2024, the new glasses resemble ordinary eyewear and can be worn comfortably throughout the day. The built-in AI assistant can identify objects, translate languages in real time, and provide navigation directions directly in the user's field of vision.\n\nThe glasses are powered by a custom M5 chip designed specifically for on-device AI processing. This means most computations happen locally, reducing latency and addressing privacy concerns. Apple emphasized that no images or conversations are sent to the cloud without explicit user permission.\n\nBattery life reaches approximately eight hours with moderate use, and the glasses charge wirelessly through a compact carrying case. Third-party developers can build applications using the new visionOS Lite SDK, which supports gesture recognition and voice commands.\n\nIndustry analysts predict the device could sell over 30 million units in its first year, potentially creating a new product category that bridges the gap between smartphones and augmented reality. Pre-orders begin next month at a starting price of 799 dollars, significantly lower than the Vision Pro's launch price.",
         "vocabulary": [
-            {"word": "breakthrough", "meaning": "突破"},
-            {"word": "transform", "meaning": "转变"},
-            {"word": "interaction", "meaning": "交互"},
-            {"word": "integration", "meaning": "整合"},
-            {"word": "accessible", "meaning": "可访问的"}
+            {"word": "unveil", "meaning": "揭开，发布"},
+            {"word": "wearable", "meaning": "可穿戴设备"},
+            {"word": "transparent", "meaning": "透明的"},
+            {"word": "overlay", "meaning": "叠加，覆盖"},
+            {"word": "bulky", "meaning": "笨重的"},
+            {"word": "latency", "meaning": "延迟"},
+            {"word": "explicit", "meaning": "明确的"},
+            {"word": "approximate", "meaning": "大约的"},
+            {"word": "gesture", "meaning": "手势"},
+            {"word": "augmented reality", "meaning": "增强现实"}
         ]
     },
     "vocabulary": [
-        {"word": "algorithm", "meaning": "算法", "example": "The algorithm optimizes the search process."},
-        {"word": "framework", "meaning": "框架", "example": "Android provides a robust framework for app development."},
-        {"word": "implementation", "meaning": "实现", "example": "The implementation of this feature took two weeks."},
-        {"word": "optimization", "meaning": "优化", "example": "Performance optimization is crucial for user experience."},
-        {"word": "architecture", "meaning": "架构", "example": "Clean architecture separates concerns effectively."}
+        {"word": "cutting-edge", "meaning": "前沿的，尖端的", "example": "The company is known for its cutting-edge research in AI."},
+        {"word": "endeavor", "meaning": "努力，尝试", "example": "Space exploration is one of humanity's greatest endeavors."},
+        {"word": "ubiquitous", "meaning": "无处不在的", "example": "Smartphones have become ubiquitous in modern society."},
+        {"word": "leverage", "meaning": "利用，借助", "example": "Businesses can leverage data to improve customer experience."},
+        {"word": "resilient", "meaning": "有弹性的，适应力强的", "example": "A resilient network can recover quickly from failures."},
+        {"word": "paradigm", "meaning": "范式，模式", "example": "Cloud computing represents a paradigm shift in how we build software."},
+        {"word": "meticulous", "meaning": "一丝不苟的", "example": "The scientist was meticulous in recording every observation."},
+        {"word": "volatile", "meaning": "不稳定的，易变的", "example": "The stock market has been volatile this quarter."}
     ],
     "sentences": [
         {
-            "original": "The rapid advancement of AI technology has revolutionized the way we interact with digital devices.",
-            "translation": "AI技术的快速发展彻底改变了我们与数字设备互动的方式。",
-            "structure": "主语(The rapid advancement...) + 谓语(has revolutionized) + 宾语(the way...)"
+            "original": "The device, powered by a custom chip designed for on-device AI processing, reduces latency while addressing privacy concerns.",
+            "translation": "这款设备搭载了专为设备端人工智能处理而设计的定制芯片，在解决隐私问题的同时降低了延迟。",
+            "structure": "主语 The device + 后置定语 powered by... + 谓语 reduces + 宾语 latency + while引导的伴随状语 addressing..."
+        },
+        {
+            "original": "Industry analysts predict the device could sell over 30 million units in its first year, potentially creating a new product category.",
+            "translation": "行业分析师预测，该设备在第一年可能售出超过3000万台，有望创造一个全新的产品品类。",
+            "structure": "主语 Industry analysts + 谓语 predict + 宾语从句 the device could sell... + 现在分词短语作结果状语 potentially creating..."
+        },
+        {
+            "original": "Unlike the bulky Vision Pro headset released in 2024, the new glasses resemble ordinary eyewear and can be worn comfortably throughout the day.",
+            "translation": "与2024年发布的笨重的Vision Pro头戴设备不同，新眼镜外观类似普通眼镜，可以舒适地全天佩戴。",
+            "structure": "Unlike引导的比较状语 + 主语 the new glasses + 并列谓语 resemble... and can be worn... + 时间状语 throughout the day"
         }
     ]
 }
