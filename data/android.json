@@ -1,19 +1,26 @@
 {
-    "date": "2026-06-05",
+    "date": "2026-06-06",
     "questions": [
         {
-            "title": "Handler 内存泄漏",
-            "content": "以下代码会导致什么问题？如何修复？",
-            "code": "class MainActivity : AppCompatActivity() {\n    private val handler = object : Handler(Looper.getMainLooper()) {\n        override fun handleMessage(msg: Message) {\n            textView.text = \"更新UI\"\n            sendEmptyMessageDelayed(0, 1000)\n        }\n    }\n}",
-            "answer": "会导致内存泄漏。匿名内部类持有外部Activity的引用，延迟消息会阻止Activity被GC回收。",
-            "explanation": "修复方案：使用WeakReference或LifecycleScope。"
+            "title": "自定义 View 的测量流程：onMeasure 中如何正确处理 wrap_content？",
+            "content": "在自定义 View 中，如果直接继承 View 而非 TextView/ImageView 等，onMeasure 方法中如果不做特殊处理，wrap_content 的表现会和 match_parent 一样。请解释原因，并给出正确的处理方式。",
+            "code": "override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {\n    // 这里如何正确处理 wrap_content？\n}",
+            "answer": "直接继承 View 时，wrap_content 表现与 match_parent 相同，是因为 View 的默认 onMeasure 实现中，对 AT_MOST 和 EXACTLY 模式不做区分，都会使用 MeasureSpec.getSize() 返回的值。正确做法是在 onMeasure 中判断 MeasureSpec.getMode()，当模式为 AT_MOST 时，将测量尺寸限制为一个默认值（如建议的最小宽高），同时不超过父容器给定的最大尺寸。",
+            "explanation": "Android 的测量规格（MeasureSpec）由 mode + size 组成：EXACTLY 对应 match_parent 和具体 dp 值，AT_MOST 对应 wrap_content，UNSPECIFIED 用于 ScrollView 等不限制子 View 的场景。View.getDefaultSize() 的实现是：如果是 AT_MOST 或 EXACTLY，都直接返回 MeasureSpec.getSize()，这就是 wrap_content 失效的根源。自定义 View 需要手动处理 AT_MOST 模式，建议代码：\nval specMode = MeasureSpec.getMode(measureSpec)\nval specSize = MeasureSpec.getSize(measureSpec)\nval result = if (specMode == MeasureSpec.AT_MOST) {\n    min(defaultSize, specSize)\n} else {\n    specSize\n}"
         },
         {
-            "title": "协程取消机制",
-            "content": "以下代码中，协程能正确取消吗？为什么？",
-            "code": "lifecycleScope.launch {\n    while (true) {\n        delay(1000)\n        updateUI()\n    }\n}",
-            "answer": "能正确取消。delay()是挂起函数，会检查协程的取消状态。",
-            "explanation": "如果使用Thread.sleep()则无法取消，因为sleep不会检查取消状态。"
+            "title": "属性动画与补间动画的本质区别是什么？为什么属性动画能真正改变 View 的属性？",
+            "content": "Android 中有两种主要的动画机制：补间动画（Tween Animation）和属性动画（Property Animation）。请从实现原理层面解释二者的区别，以及为什么属性动画能让 View 真正移动到新位置并响应点击事件。",
+            "code": "// 补间动画：View 位置不变，只是绘制偏移\nval translateAnim = TranslateAnimation(0f, 200f, 0f, 200f)\ntranslateAnim.duration = 1000\nview.startAnimation(translateAnim)\n\n// 属性动画：View 的 translationX/Y 属性真正改变\nObjectAnimator.ofFloat(view, \"translationX\", 0f, 200f).start()",
+            "answer": "补间动画只改变 View 的绘制（Canvas 变换），不改变 View 对象的实际属性，因此 View 的位置（left/top/right/bottom）不变，点击事件仍在原位置响应。属性动画通过反射或 Property 机制直接修改对象的属性值（如 translationX、alpha），View 的实际属性被改变，所以视觉位置和交互区域一致。属性动画还可以作用于任意对象，不限于 View。",
+            "explanation": "补间动画的原理是在 View.draw() 时对 Canvas 做矩阵变换（平移/旋转/缩放/透明度），但 View 的 layout 参数不变，动画结束后恢复原始绘制状态。属性动画的核心是 ValueAnimator，它在每一帧计算出插值后的属性值，然后通过 Property 的 setter 或反射写入目标对象。以 ObjectAnimator.ofFloat(view, \"translationX\", 0f, 200f) 为例，它每帧调用 view.setTranslationX(value)，这会触发 invalidate() 重绘，同时 View 的 getHitRect() 也会反映新位置，所以点击区域跟着变化。另外 ViewPropertyAnimator 是属性动画针对 View 的优化封装，内部复用了 RenderThread，性能更优。"
+        },
+        {
+            "title": "如何实现一个支持嵌套滚动的自定义 View？NestedScrollingChild 和 NestedScrollingParent 的协作机制是怎样的？",
+            "content": "在 CoordinatorLayout + AppBarLayout + RecyclerView 的经典组合中，RecyclerView 向上滑动时 AppBarLayout 可以联动折叠。请解释 NestedScrolling 机制的核心流程，以及自定义 View 如何接入这套机制。",
+            "code": "class CustomScrollView : View, NestedScrollingChild3 {\n    private val childHelper = NestedScrollingChildHelper(this)\n\n    init {\n        isNestedScrollingEnabled = true\n    }\n\n    override fun dispatchNestedPreScroll(\n        dx: Int, dy: Int, consumed: IntArray?,\n        offsetInWindow: IntArray?, type: Int\n    ): Boolean {\n        return childHelper.dispatchNestedPreScroll(\n            dx, dy, consumed, offsetInWindow, type\n        )\n    }\n}",
+            "answer": "NestedScrolling 的核心机制是：子 View 在消费滚动距离之前先通知父 View（preScroll），父 View 可以优先消费一部分；子 View 消费后，将剩余距离再次通知父 View（postScroll）。流程为：1) 子 View 调用 startNestedScroll() 寻找支持嵌套滚动的父 View；2) 子 View 在滚动前调用 dispatchNestedPreScroll()，父 View 在 onNestedPreScroll() 中优先消费；3) 子 View 处理剩余滚动；4) 子 View 调用 dispatchNestedScroll() 将未消费的距离传给父 View 的 onNestedScroll()。自定义 View 需要实现 NestedScrollingChild 接口并使用 NestedScrollingChildHelper 委托实现。",
+            "explanation": "NestedScrolling 机制涉及两组接口：NestedScrollingParent（父容器实现，如 CoordinatorLayout）和 NestedScrollingChild（子 View 实现，如 RecyclerView）。V2/V3 版本增加了 TYPE_NON_TOUCH（惯性滚动）和 TYPE_TOUCH 的区分。关键点：1) startNestedScroll() 通过 NestedScrollingChildHelper 向上遍历 View 树寻找实现了 NestedScrollingParent 的祖先；2) consumed 数组记录父 View 消费了多少，子 View 减去这部分再处理；3) offsetInWindow 用于补偿子 View 在滚动过程中因父 View 布局变化导致的偏移。实际开发中，如果只是让自定义 View 支持被 CoordinatorLayout 协调，实现 NestedScrollingChild 接口 + 持有 NestedScrollingChildHelper 即可，大部分方法直接委托给 helper。"
         }
     ]
 }
