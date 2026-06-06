@@ -51,7 +51,7 @@
     <div class="container">
         <div class="header">
             <h1>📚 每日学习</h1>
-            <p class="date">2026年6月4日 星期四</p>
+            <p class="date">2026年6月6日 星期五</p>
             <div class="nav">
                 <a href="stats.html">📊 学习统计</a>
             </div>
@@ -61,185 +61,186 @@
             </div>
         </div>
 
-        <!-- Android 面试题 -->
+        <!-- Android 面试题 - 今日主题：性能优化 -->
         <div class="section">
-            <h2 class="section-title">📱 Android 面试题（5题）</h2>
+            <h2 class="section-title">📱 Android 面试题（5题）- 今日主题：性能优化</h2>
 
             <div class="question" id="q1" data-correct="B">
-                <p class="q-title">1. Activity 的生命周期方法有哪些？</p>
+                <p class="q-title">1. 什么是内存抖动（Memory Churn）？如何避免？</p>
                 <div class="options">
-                    <div class="option" data-value="A">A. onCreate, onStart, onResume</div>
-                    <div class="option" data-value="B">B. onCreate, onStart, onResume, onPause, onStop, onDestroy</div>
-                    <div class="option" data-value="C">C. onCreate, onResume, onDestroy</div>
-                    <div class="option" data-value="D">D. onStart, onResume, onPause</div>
+                    <div class="option" data-value="A">A. 内存被病毒感染</div>
+                    <div class="option" data-value="B">B. 短时间内频繁创建和销毁对象导致GC频繁执行</div>
+                    <div class="option" data-value="C">C. 内存泄漏的另一种说法</div>
+                    <div class="option" data-value="D">D. 内存不足导致的崩溃</div>
                 </div>
                 <button class="answer-btn" onclick="toggleExplanation('q1')">查看解析</button>
                 <div class="explanation">
                     <strong>✅ 答案：B</strong><br>
-                    Activity 完整生命周期：onCreate() → onStart() → onResume() → onPause() → onStop() → onDestroy()。还有 onRestart() 在 Activity 从停止状态重新启动时调用。
+                    内存抖动是指短时间内大量创建临时对象，触发频繁GC，导致界面卡顿。避免方法：使用对象池、避免在循环中创建对象、使用StringBuilder代替字符串拼接。
                 </div>
             </div>
 
-            <div class="question" id="q2" data-correct="B">
-                <p class="q-title">2. Fragment 和 Activity 的区别是什么？</p>
+            <div class="question" id="q2" data-correct="C">
+                <p class="q-title">2. 如何检测和解决内存泄漏？</p>
                 <div class="options">
-                    <div class="option" data-value="A">A. Fragment 不能有自己的布局</div>
-                    <div class="option" data-value="B">B. Fragment 必须嵌入 Activity 中使用</div>
-                    <div class="option" data-value="C">C. Fragment 比 Activity 运行更快</div>
-                    <div class="option" data-value="D">D. Activity 不能包含 Fragment</div>
+                    <div class="option" data-value="A">A. 只需要重启应用</div>
+                    <div class="option" data-value="B">B. 使用 System.gc() 强制回收</div>
+                    <div class="option" data-value="C">C. 使用 LeakCanary 检测，修复未释放的引用</div>
+                    <div class="option" data-value="D">D. 增加手机内存</div>
                 </div>
                 <button class="answer-btn" onclick="toggleExplanation('q2')">查看解析</button>
                 <div class="explanation">
-                    <strong>✅ 答案：B</strong><br>
-                    Fragment 不能独立存在，必须嵌入到 Activity 中。Fragment 是模块化的 UI 组件，可以在多个 Activity 中复用，支持动态添加、移除和替换。
+                    <strong>✅ 答案：C</strong><br>
+                    LeakCanary 是常用的内存泄漏检测工具。常见泄漏原因：静态变量持有Activity引用、未取消的Handler/回调、未关闭的资源。修复：使用弱引用、及时取消注册、在onDestroy释放资源。
                 </div>
             </div>
 
             <div class="question" id="q3" data-correct="A">
-                <p class="q-title">3. SharedPreferences 是线程安全的吗？</p>
+                <p class="q-title">3. 布局优化有哪些方法？</p>
                 <div class="options">
-                    <div class="option" data-value="A">A. 完全线程安全</div>
-                    <div class="option" data-value="B">B. 完全不安全</div>
-                    <div class="option" data-value="C">C. 读操作安全，写操作不安全</div>
-                    <div class="option" data-value="D">D. 只有 commit() 是安全的</div>
+                    <div class="option" data-value="A">A. 减少嵌套层级、使用 ConstraintLayout、ViewStub 延迟加载</div>
+                    <div class="option" data-value="B">B. 使用更多图片美化</div>
+                    <div class="option" data-value="C">C. 增加动画效果</div>
+                    <div class="option" data-value="D">D. 使用更复杂的自定义View</div>
                 </div>
                 <button class="answer-btn" onclick="toggleExplanation('q3')">查看解析</button>
                 <div class="explanation">
                     <strong>✅ 答案：A</strong><br>
-                    SharedPreferences 本身是线程安全的（内存中操作），但跨进程不安全。commit() 同步写入磁盘，apply() 异步写入。推荐使用 apply() 避免 ANR。
+                    布局优化核心：1) 减少嵌套层级（推荐 ConstraintLayout）；2) 使用 include 复用布局；3) ViewStub 延迟加载不常用视图；4) 使用 merge 减少层级；5) 避免过度绘制。
                 </div>
             </div>
 
             <div class="question" id="q4" data-correct="B">
-                <p class="q-title">4. Handler、Looper、MessageQueue 的关系？</p>
+                <p class="q-title">4. 如何优化列表滑动性能？</p>
                 <div class="options">
-                    <div class="option" data-value="A">A. 三者没有关系</div>
-                    <div class="option" data-value="B">B. Handler 发送消息到 MessageQueue，Looper 循环取出消息</div>
-                    <div class="option" data-value="C">C. Looper 直接处理消息</div>
-                    <div class="option" data-value="D">D. MessageQueue 创建 Handler</div>
+                    <div class="option" data-value="A">A. 加载所有数据到内存</div>
+                    <div class="option" data-value="B">B. 使用 ViewHolder 模式、分页加载、图片异步加载</div>
+                    <div class="option" data-value="C">C. 增加列表动画</div>
+                    <div class="option" data-value="D">D. 使用 ScrollView 嵌套</div>
                 </div>
                 <button class="answer-btn" onclick="toggleExplanation('q4')">查看解析</button>
                 <div class="explanation">
                     <strong>✅ 答案：B</strong><br>
-                    Handler 发送 Message 到 MessageQueue，Looper.loop() 无限循环从 MessageQueue 取出消息，分发给对应的 Handler 处理。每个线程只能有一个 Looper。
+                    列表优化：1) RecyclerView + ViewHolder 复用；2) DiffUtil 增量更新；3) 分页加载（Paging）；4) 图片异步加载（Glide/Coil）；5) 避免嵌套滚动；6) setHasFixedSize(true)。
                 </div>
             </div>
 
-            <div class="question" id="q5" data-correct="B">
-                <p class="q-title">5. ANR 是什么？如何避免？</p>
+            <div class="question" id="q5" data-correct="C">
+                <p class="q-title">5. 什么是过度绘制？如何检测和优化？</p>
                 <div class="options">
-                    <div class="option" data-value="A">A. ANR 是网络超时</div>
-                    <div class="option" data-value="B">B. ANR 是应用无响应（Application Not Responding）</div>
-                    <div class="option" data-value="C">C. ANR 是内存溢出</div>
-                    <div class="option" data-value="D">D. ANR 是编译错误</div>
+                    <div class="option" data-value="A">A. GPU绘制太慢</div>
+                    <div class="option" data-value="B">B. CPU使用率过高</div>
+                    <div class="option" data-value="C">C. 同一像素被多次绘制，使用开发者选项的"调试GPU过度绘制"检测</div>
+                    <div class="option" data-value="D">D. 内存占用过高</div>
                 </div>
                 <button class="answer-btn" onclick="toggleExplanation('q5')">查看解析</button>
                 <div class="explanation">
-                    <strong>✅ 答案：B</strong><br>
-                    ANR = Application Not Responding。触发条件：主线程 5 秒内无响应（Activity）或 BroadcastReceiver 10 秒内未完成。避免方法：耗时操作放子线程、使用协程、避免主线程 I/O。
+                    <strong>✅ 答案：C</strong><br>
+                    过度绘制是指同一个像素点在同一帧中被绘制多次。检测：开发者选项 → 调试GPU过度绘制。优化：移除多余背景、减少嵌套层级、使用 clipRect 裁剪不可见区域。
                 </div>
             </div>
         </div>
 
-        <!-- 英语阅读 -->
+        <!-- 英语阅读 - 今日主题：科技新闻 -->
         <div class="section">
-            <h2 class="section-title">📖 英语阅读：Apple Announces New AI Features</h2>
+            <h2 class="section-title">📖 英语阅读：The Rise of Electric Vehicles</h2>
             <div class="reading">
-                <p>Apple has announced a series of new artificial intelligence features for its upcoming iPhone models. The company said these AI capabilities will <span class="word">revolutionize</span> how users interact with their devices.</p>
+                <p>Electric vehicles (EVs) are becoming increasingly popular around the world. In 2025, global EV sales <span class="word">exceeded</span> 20 million units, a 25% increase from the previous year. China remains the largest market, accounting for over 60% of global sales.</p>
 
-                <p>The new features include an improved Siri that can understand <span class="word">context</span> better, an AI-powered photo editor, and real-time language <span class="word">translation</span>. Apple's CEO said the company has been working on these technologies for years.</p>
+                <p>Major <span class="word">automakers</span> like Tesla, BYD, and Volkswagen are <span class="word">investing</span> billions of dollars in EV technology. The main <span class="word">factors</span> driving this growth include government <span class="word">incentives</span>, falling battery costs, and growing environmental awareness.</p>
 
-                <p>"We believe AI should be <span class="word">personal</span> and <span class="word">private</span>," the CEO stated during the presentation. "Our approach processes most data directly on the device, rather than sending it to the cloud."</p>
+                <p>However, challenges remain. The lack of charging <span class="word">infrastructure</span> in many regions is still a major <span class="word">barrier</span> to adoption. Additionally, the <span class="word">extraction</span> of lithium and other rare minerals for batteries raises environmental concerns.</p>
 
-                <p>Industry experts say Apple is catching up with competitors like Google and Samsung, who have already <span class="word">integrated</span> similar AI features into their phones. However, Apple's focus on privacy could give it an advantage.</p>
+                <p>Despite these challenges, experts predict that EVs will account for over 50% of new car sales by 2030. The <span class="word">transition</span> to electric mobility is seen as crucial for reducing carbon emissions and combating climate change.</p>
 
-                <p>The new AI features will be available as a free software update this fall.</p>
+                <p>"The future of transportation is electric," said an industry analyst. "As battery technology improves and costs continue to fall, EVs will become the <span class="word">dominant</span> form of personal transportation."</p>
             </div>
 
             <!-- 英语阅读题 -->
             <div class="question" id="q6" data-correct="B">
-                <p class="q-title">6. What will the new AI capabilities do?</p>
+                <p class="q-title">6. What was the global EV sales growth rate in 2025?</p>
                 <div class="options">
-                    <div class="option" data-value="A">A. Make phones cheaper</div>
-                    <div class="option" data-value="B">B. Revolutionize how users interact with devices</div>
-                    <div class="option" data-value="C">C. Replace all other phones</div>
-                    <div class="option" data-value="D">D. Only work with Siri</div>
+                    <div class="option" data-value="A">A. 15%</div>
+                    <div class="option" data-value="B">B. 25%</div>
+                    <div class="option" data-value="C">C. 35%</div>
+                    <div class="option" data-value="D">D. 50%</div>
                 </div>
                 <button class="answer-btn" onclick="toggleExplanation('q6')">查看解析</button>
                 <div class="explanation">
                     <strong>✅ 答案：B</strong><br>
-                    原文："these AI capabilities will revolutionize how users interact with their devices"
+                    原文："global EV sales exceeded 20 million units, a 25% increase from the previous year"
                 </div>
             </div>
 
             <div class="question" id="q7" data-correct="C">
-                <p class="q-title">7. How does Apple process most AI data?</p>
+                <p class="q-title">7. Which country is the largest EV market?</p>
                 <div class="options">
-                    <div class="option" data-value="A">A. In the cloud</div>
-                    <div class="option" data-value="B">B. Using Google servers</div>
-                    <div class="option" data-value="C">C. Directly on the device</div>
-                    <div class="option" data-value="D">D. Through Samsung</div>
+                    <div class="option" data-value="A">A. USA</div>
+                    <div class="option" data-value="B">B. Germany</div>
+                    <div class="option" data-value="C">C. China</div>
+                    <div class="option" data-value="D">D. Japan</div>
                 </div>
                 <button class="answer-btn" onclick="toggleExplanation('q7')">查看解析</button>
                 <div class="explanation">
                     <strong>✅ 答案：C</strong><br>
-                    原文："Our approach processes most data directly on the device, rather than sending it to the cloud."
+                    原文："China remains the largest market, accounting for over 60% of global sales"
                 </div>
             </div>
 
             <div class="question" id="q8" data-correct="A">
-                <p class="q-title">8. 选出 "revolutionize" 的正确中文意思：</p>
+                <p class="q-title">8. 选出 "infrastructure" 的正确中文意思：</p>
                 <div class="options">
-                    <div class="option" data-value="A">A. 彻底改变</div>
-                    <div class="option" data-value="B">B. 革命</div>
-                    <div class="option" data-value="C">C. 进化</div>
-                    <div class="option" data-value="D">D. 发展</div>
+                    <div class="option" data-value="A">A. 基础设施</div>
+                    <div class="option" data-value="B">B. 软件系统</div>
+                    <div class="option" data-value="C">C. 网络连接</div>
+                    <div class="option" data-value="D">D. 交通工具</div>
                 </div>
                 <button class="answer-btn" onclick="toggleExplanation('q8')">查看解析</button>
                 <div class="explanation">
                     <strong>✅ 答案：A</strong><br>
-                    revolutionize = 彻底改变、使发生革命性变化
+                    infrastructure = 基础设施、基础建设
                 </div>
             </div>
 
             <div class="question" id="q9" data-correct="D">
-                <p class="q-title">9. When will the new AI features be available?</p>
+                <p class="q-title">9. When will EVs account for over 50% of new car sales?</p>
                 <div class="options">
-                    <div class="option" data-value="A">A. Next week</div>
-                    <div class="option" data-value="B">B. Next month</div>
-                    <div class="option" data-value="C">C. Next year</div>
-                    <div class="option" data-value="D">D. This fall</div>
+                    <div class="option" data-value="A">A. 2025</div>
+                    <div class="option" data-value="B">B. 2028</div>
+                    <div class="option" data-value="C">C. 2029</div>
+                    <div class="option" data-value="D">D. 2030</div>
                 </div>
                 <button class="answer-btn" onclick="toggleExplanation('q9')">查看解析</button>
                 <div class="explanation">
                     <strong>✅ 答案：D</strong><br>
-                    原文："The new AI features will be available as a free software update this fall."
+                    原文："experts predict that EVs will account for over 50% of new car sales by 2030"
                 </div>
             </div>
 
             <div class="question" id="q10" data-correct="B">
-                <p class="q-title">10. What advantage does Apple have over competitors?</p>
+                <p class="q-title">10. What is the main challenge for EV adoption?</p>
                 <div class="options">
-                    <div class="option" data-value="A">A. Lower prices</div>
-                    <div class="option" data-value="B">B. Focus on privacy</div>
-                    <div class="option" data-value="C">C. Better cameras</div>
-                    <div class="option" data-value="D">D. Faster processors</div>
+                    <div class="option" data-value="A">A. High price of EVs</div>
+                    <div class="option" data-value="B">B. Lack of charging infrastructure</div>
+                    <div class="option" data-value="C">C. Poor battery life</div>
+                    <div class="option" data-value="D">D. Limited model choices</div>
                 </div>
                 <button class="answer-btn" onclick="toggleExplanation('q10')">查看解析</button>
                 <div class="explanation">
                     <strong>✅ 答案：B</strong><br>
-                    原文："Apple's focus on privacy could give it an advantage."
+                    原文："The lack of charging infrastructure in many regions is still a major barrier to adoption"
                 </div>
             </div>
 
             <div class="vocab">
                 <h4>📝 今日词汇</h4>
-                <div class="vocab-item"><strong>revolutionize</strong> /ˌrevəˈluːʃənaɪz/ - 彻底改变</div>
-                <div class="vocab-item"><strong>context</strong> /ˈkɒntekst/ - 上下文，语境</div>
-                <div class="vocab-item"><strong>translation</strong> /trænsˈleɪʃn/ - 翻译</div>
-                <div class="vocab-item"><strong>personal</strong> /ˈpɜːsənl/ - 个人的</div>
-                <div class="vocab-item"><strong>private</strong> /ˈpraɪvət/ - 私密的</div>
-                <div class="vocab-item"><strong>integrate</strong> /ˈɪntɪɡreɪt/ - 整合，集成</div>
+                <div class="vocab-item"><strong>exceeded</strong> /ɪkˈsiːdɪd/ - 超过</div>
+                <div class="vocab-item"><strong>automakers</strong> /ˈɔːtəʊmeɪkəz/ - 汽车制造商</div>
+                <div class="vocab-item"><strong>investing</strong> /ɪnˈvestɪŋ/ - 投资</div>
+                <div class="vocab-item"><strong>incentives</strong> /ɪnˈsentɪvz/ - 激励措施</div>
+                <div class="vocab-item"><strong>infrastructure</strong> /ˈɪnfrəstrʌktʃə/ - 基础设施</div>
+                <div class="vocab-item"><strong>transition</strong> /trænˈzɪʃn/ - 转变、过渡</div>
+                <div class="vocab-item"><strong>dominant</strong> /ˈdɒmɪnənt/ - 主导的、占优势的</div>
             </div>
         </div>
 
@@ -297,7 +298,7 @@
         }
 
         const deviceId = getDeviceId();
-        const today = '2026-06-04';
+        const today = '2026-06-06';
         let userAnswers = {};
         let submitted = false;
 
