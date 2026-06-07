@@ -1,46 +1,54 @@
 {
-    "date": "2026-06-06",
+    "date": "2026-06-07",
     "news": {
-        "title": "Apple Unveils AI-Powered Smart Glasses at WWDC 2026",
-        "content": "Apple announced its long-awaited smart glasses at the Worldwide Developers Conference on Monday, marking the company's boldest push into wearable artificial intelligence. The device, called Apple Vision Lite, weighs just 45 grams and features a transparent micro-OLED display that overlays digital information onto the real world.\n\nUnlike the bulky Vision Pro headset released in 2024, the new glasses resemble ordinary eyewear and can be worn comfortably throughout the day. The built-in AI assistant can identify objects, translate languages in real time, and provide navigation directions directly in the user's field of vision.\n\nThe glasses are powered by a custom M5 chip designed specifically for on-device AI processing. This means most computations happen locally, reducing latency and addressing privacy concerns. Apple emphasized that no images or conversations are sent to the cloud without explicit user permission.\n\nBattery life reaches approximately eight hours with moderate use, and the glasses charge wirelessly through a compact carrying case. Third-party developers can build applications using the new visionOS Lite SDK, which supports gesture recognition and voice commands.\n\nIndustry analysts predict the device could sell over 30 million units in its first year, potentially creating a new product category that bridges the gap between smartphones and augmented reality. Pre-orders begin next month at a starting price of 799 dollars, significantly lower than the Vision Pro's launch price.",
+        "title": "AI Agents Are Transforming How Software Is Built",
+        "content": "Artificial intelligence agents are rapidly changing the way software developers write and maintain code. Major technology companies including Google, Microsoft, and OpenAI have released AI-powered coding assistants that can understand complex programming tasks and generate working code in minutes.\n\nThese AI agents go beyond simple code completion. They can analyze entire codebases, identify bugs, suggest architectural improvements, and even write unit tests automatically. Developers report that using these tools has increased their productivity by 30 to 50 percent on routine tasks.\n\nThe technology works by combining large language models with specialized reasoning capabilities. When a developer describes a feature in natural language, the AI agent breaks the request into smaller steps, searches through existing code for relevant patterns, and generates a complete implementation. It can also explain its reasoning, making it easier for developers to review and modify the output.\n\nHowever, the rise of AI coding tools has sparked debate in the software industry. Some experienced developers worry that junior programmers may become overly dependent on AI assistance, potentially weakening their fundamental coding skills. Others argue that these tools free developers to focus on higher-level design and problem-solving rather than repetitive boilerplate code.\n\nCompanies are also grappling with security and intellectual property concerns. AI-generated code may inadvertently include copyrighted snippets or introduce subtle vulnerabilities that human reviewers might miss. As a result, many organizations are implementing policies that require thorough code review even for AI-generated contributions.\n\nDespite these challenges, adoption continues to accelerate. A recent survey found that over 70 percent of professional developers now use some form of AI coding assistant in their daily work. Industry analysts predict that within the next two years, AI agents will be involved in the majority of software development activities worldwide.",
         "vocabulary": [
-            {"word": "unveil", "meaning": "揭开，发布"},
-            {"word": "wearable", "meaning": "可穿戴设备"},
-            {"word": "transparent", "meaning": "透明的"},
-            {"word": "overlay", "meaning": "叠加，覆盖"},
-            {"word": "bulky", "meaning": "笨重的"},
-            {"word": "latency", "meaning": "延迟"},
-            {"word": "explicit", "meaning": "明确的"},
-            {"word": "approximate", "meaning": "大约的"},
-            {"word": "gesture", "meaning": "手势"},
-            {"word": "augmented reality", "meaning": "增强现实"}
+            {"word": "autonomously", "meaning": "自主地"},
+            {"word": "architectural", "meaning": "架构的"},
+            {"word": "boilerplate", "meaning": "样板代码"},
+            {"word": "inadvertently", "meaning": "无意中地"},
+            {"word": "vulnerabilities", "meaning": "漏洞"},
+            {"word": "accelerate", "meaning": "加速"}
         ]
     },
     "vocabulary": [
-        {"word": "cutting-edge", "meaning": "前沿的，尖端的", "example": "The company is known for its cutting-edge research in AI."},
-        {"word": "endeavor", "meaning": "努力，尝试", "example": "Space exploration is one of humanity's greatest endeavors."},
-        {"word": "ubiquitous", "meaning": "无处不在的", "example": "Smartphones have become ubiquitous in modern society."},
-        {"word": "leverage", "meaning": "利用，借助", "example": "Businesses can leverage data to improve customer experience."},
-        {"word": "resilient", "meaning": "有弹性的，适应力强的", "example": "A resilient network can recover quickly from failures."},
-        {"word": "paradigm", "meaning": "范式，模式", "example": "Cloud computing represents a paradigm shift in how we build software."},
-        {"word": "meticulous", "meaning": "一丝不苟的", "example": "The scientist was meticulous in recording every observation."},
-        {"word": "volatile", "meaning": "不稳定的，易变的", "example": "The stock market has been volatile this quarter."}
+        {"word": "transform", "meaning": "转变，改造", "example": "Technology continues to transform the way we communicate."},
+        {"word": "assistant", "meaning": "助手，助理", "example": "The AI assistant can help you organize your schedule."},
+        {"word": "productivity", "meaning": "生产力，效率", "example": "Regular breaks can actually improve your productivity."},
+        {"word": "implement", "meaning": "实施，执行", "example": "The team decided to implement the new strategy immediately."},
+        {"word": "overly", "meaning": "过度地", "example": "Don't be overly concerned about small mistakes."},
+        {"word": "grapple", "meaning": "努力解决，搏斗", "example": "Scientists are grappling with the ethical implications of gene editing."},
+        {"word": "intellectual", "meaning": "智力的，知识的", "example": "Intellectual property protection is crucial for tech companies."},
+        {"word": "survey", "meaning": "调查，问卷", "example": "The survey revealed interesting trends in consumer behavior."},
+        {"word": "analyst", "meaning": "分析师", "example": "Market analysts predict steady growth in the sector."},
+        {"word": "fundamental", "meaning": "基本的，根本的", "example": "Understanding data structures is fundamental to computer science."}
     ],
     "sentences": [
         {
-            "original": "The device, powered by a custom chip designed for on-device AI processing, reduces latency while addressing privacy concerns.",
-            "translation": "这款设备搭载了专为设备端人工智能处理而设计的定制芯片，在解决隐私问题的同时降低了延迟。",
-            "structure": "主语 The device + 后置定语 powered by... + 谓语 reduces + 宾语 latency + while引导的伴随状语 addressing..."
+            "original": "These AI agents go beyond simple code completion.",
+            "translation": "这些AI智能体超越了简单的代码补全功能。",
+            "structure": "主语(These AI agents) + 谓语(go beyond) + 宾语(simple code completion)。go beyond 意为「超越，不止于」，是一个常用的动词短语。"
         },
         {
-            "original": "Industry analysts predict the device could sell over 30 million units in its first year, potentially creating a new product category.",
-            "translation": "行业分析师预测，该设备在第一年可能售出超过3000万台，有望创造一个全新的产品品类。",
-            "structure": "主语 Industry analysts + 谓语 predict + 宾语从句 the device could sell... + 现在分词短语作结果状语 potentially creating..."
+            "original": "When a developer describes a feature in natural language, the AI agent breaks the request into smaller steps.",
+            "translation": "当开发者用自然语言描述一个功能时，AI智能体会将请求分解为更小的步骤。",
+            "structure": "时间状语从句(When...language) + 主句(the AI agent...steps)。break...into... 意为「把……分解为……」，是高频搭配。"
         },
         {
-            "original": "Unlike the bulky Vision Pro headset released in 2024, the new glasses resemble ordinary eyewear and can be worn comfortably throughout the day.",
-            "translation": "与2024年发布的笨重的Vision Pro头戴设备不同，新眼镜外观类似普通眼镜，可以舒适地全天佩戴。",
-            "structure": "Unlike引导的比较状语 + 主语 the new glasses + 并列谓语 resemble... and can be worn... + 时间状语 throughout the day"
+            "original": "Others argue that these tools free developers to focus on higher-level design and problem-solving.",
+            "translation": "另一些人则认为，这些工具让开发者得以专注于更高层次的设计和问题解决。",
+            "structure": "主语(Others) + 谓语(argue) + that宾语从句。free sb to do sth 意为「使某人得以做某事」，focus on 意为「专注于」。"
+        },
+        {
+            "original": "AI-generated code may inadvertently include copyrighted snippets or introduce subtle vulnerabilities that human reviewers might miss.",
+            "translation": "AI生成的代码可能会无意中包含受版权保护的代码片段，或者引入人类审查者可能遗漏的微妙漏洞。",
+            "structure": "主语(AI-generated code) + 谓语(may include...or introduce) + 并列宾语(copyrighted snippets / subtle vulnerabilities) + that定语从句修饰vulnerabilities。这是一个较长的复合句，注意 may 表示可能性。"
+        },
+        {
+            "original": "Industry analysts predict that within the next two years, AI agents will be involved in the majority of software development activities worldwide.",
+            "translation": "行业分析师预测，在未来两年内，AI智能体将参与到全球大多数软件开发活动中。",
+            "structure": "主语(Industry analysts) + 谓语(predict) + that宾语从句。从句中 within the next two years 是时间状语，be involved in 意为「参与，涉及」。"
         }
     ]
 }
