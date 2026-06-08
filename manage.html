@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学习管理系统</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header { text-align: center; color: white; margin-bottom: 30px; }
+        .header h1 { font-size: 2em; margin-bottom: 10px; }
+        .nav { display: flex; gap: 10px; justify-content: center; margin: 20px 0; flex-wrap: wrap; }
+        .nav a { background: rgba(255,255,255,0.2); color: white; padding: 10px 20px; border-radius: 25px; text-decoration: none; }
+        .nav a:hover, .nav a.active { background: rgba(255,255,255,0.4); }
+        .section { background: white; border-radius: 15px; padding: 25px; margin-bottom: 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
+        .section-title { font-size: 1.3em; color: #333; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 3px solid #667eea; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 30px; }
+        .stat-card { background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 20px; border-radius: 15px; text-align: center; }
+        .stat-value { font-size: 2.5em; font-weight: bold; }
+        .stat-label { opacity: 0.9; margin-top: 5px; }
+        .calendar { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; margin-bottom: 20px; }
+        .calendar-header { text-align: center; font-weight: bold; color: #667eea; padding: 10px; }
+        .calendar-day { text-align: center; padding: 15px 5px; border-radius: 8px; cursor: pointer; transition: all 0.2s; }
+        .calendar-day:hover { background: #f0f3ff; }
+        .calendar-day.has-data { background: #e8f5e9; font-weight: bold; }
+        .calendar-day.today { border: 2px solid #667eea; }
+        .calendar-day.selected { background: #667eea; color: white; }
+        .calendar-day.empty { color: #ccc; }
+        .history-list { max-height: 500px; overflow-y: auto; }
+        .history-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid #eee; cursor: pointer; transition: background 0.2s; }
+        .history-item:hover { background: #f8f9fa; }
+        .history-date { font-weight: bold; color: #333; }
+        .history-score { font-size: 1.2em; font-weight: bold; }
+        .score-high { color: #4caf50; }
+        .score-mid { color: #ff9800; }
+        .score-low { color: #f44336; }
+        .detail-panel { background: #f8f9fa; padding: 20px; border-radius: 10px; margin-top: 20px; }
+        .detail-title { font-size: 1.2em; color: #333; margin-bottom: 15px; }
+        .detail-table { width: 100%; border-collapse: collapse; }
+        .detail-table th, .detail-table td { padding: 10px; text-align: left; border-bottom: 1px solid #eee; }
+        .detail-table th { background: white; font-weight: 600; }
+        .correct { color: #4caf50; }
+        .wrong { color: #f44336; }
+        .chart-container { height: 250px; display: flex; align-items: flex-end; gap: 15px; padding: 20px 0; }
+        .chart-bar { flex: 1; display: flex; flex-direction: column; align-items: center; }
+        .bar { width: 100%; max-width: 50px; border-radius: 8px 8px 0 0; transition: height 0.5s; }
+        .bar-label { font-size: 0.75em; color: #666; margin-top: 8px; }
+        .bar-value { font-size: 0.85em; font-weight: bold; color: #333; margin-bottom: 5px; }
+        .filter-bar { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+        .filter-btn { padding: 8px 16px; border: 2px solid #667eea; background: white; color: #667eea; border-radius: 20px; cursor: pointer; }
+        .filter-btn.active { background: #667eea; color: white; }
+        .empty-state { text-align: center; padding: 40px; color: #999; }
+        .btn { padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-size: 0.9em; }
+        .btn-primary { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
+        .export-section { display: flex; gap: 10px; justify-content: flex-end; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📚 学习管理系统</h1>
+            <p>查看历史学习记录、答题汇总、数据分析</p>
+            <div class="nav">
+                <a href="index.html">📝 今日学习</a>
+                <a href="#" class="active">📊 学习管理</a>
+                <a href="stats.html">📈 统计分析</a>
+            </div>
+        </div>
+
+        <!-- 统计概览 -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value" id="totalDays">0</div>
+                <div class="stat-label">学习天数</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="totalQuestions">0</div>
+                <div class="stat-label">答题总数</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="totalCorrect">0</div>
+                <div class="stat-label">正确数</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="avgScore">0%</div>
+                <div class="stat-label">平均正确率</div>
+            </div>
+        </div>
+
+        <!-- 学习日历 -->
+        <div class="section">
+            <h2 class="section-title">📅 学习日历</h2>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <button class="btn" onclick="changeMonth(-1)">◀ 上月</button>
+                <h3 id="currentMonth">2026年6月</h3>
+                <button class="btn" onclick="changeMonth(1)">下月 ▶</button>
+            </div>
+            <div class="calendar" id="calendar">
+                <!-- 动态生成 -->
+            </div>
+        </div>
+
+        <!-- 答题历史 -->
+        <div class="section">
+            <h2 class="section-title">📝 答题历史</h2>
+            <div class="export-section">
+                <button class="btn btn-primary" onclick="exportData()">📥 导出数据</button>
+            </div>
+            <div class="filter-bar">
+                <button class="filter-btn active" onclick="filterHistory('all')">全部</button>
+                <button class="filter-btn" onclick="filterHistory('high')">高分 (≥80%)</button>
+                <button class="filter-btn" onclick="filterHistory('mid')">中等 (60-80%)</button>
+                <button class="filter-btn" onclick="filterHistory('low')">待提升 (<60%)</button>
+            </div>
+            <div class="history-list" id="historyList">
+                <div class="empty-state">暂无学习记录</div>
+            </div>
+        </div>
+
+        <!-- 详情面板 -->
+        <div class="section" id="detailPanel" style="display: none;">
+            <h2 class="section-title" id="detailTitle">📋 答题详情</h2>
+            <div id="detailContent">
+                <!-- 动态生成 -->
+            </div>
+        </div>
+
+        <!-- 得分趋势 -->
+        <div class="section">
+            <h2 class="section-title">📈 得分趋势</h2>
+            <div class="chart-container" id="trendChart">
+                <!-- 动态生成 -->
+            </div>
+        </div>
+
+        <!-- 薄弱环节 -->
+        <div class="section">
+            <h2 class="section-title">🎯 薄弱环节分析</h2>
+            <div id="weakAnalysis">
+                <div class="empty-state">完成更多题目后会显示分析</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+    
+    <script>
+        // Firebase 配置
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT.firebaseapp.com",
+            databaseURL: "https://YOUR_PROJECT-default-rtdb.firebaseio.com",
+            projectId: "YOUR_PROJECT",
+            storageBucket: "YOUR_PROJECT.appspot.com",
+            messagingSenderId: "YOUR_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        let allData = {};
+        let currentMonth = new Date();
+        let selectedDate = null;
+
+        // 获取设备ID
+        function getDeviceId() {
+            return localStorage.getItem('device_id') || 'unknown';
+        }
+
+        // 加载所有数据
+        async function loadAllData() {
+            try {
+                const snapshot = await db.ref('history').once('value');
+                const data = snapshot.val() || {};
+                const deviceId = getDeviceId();
+                
+                // 提取当前设备的数据
+                allData = {};
+                Object.entries(data).forEach(([date, devices]) => {
+                    if (devices[deviceId]) {
+                        allData[date] = devices[deviceId];
+                    }
+                });
+
+                renderStats();
+                renderCalendar();
+                renderHistory();
+                renderTrendChart();
+                renderWeakAnalysis();
+            } catch (error) {
+                console.error('加载失败:', error);
+                // 使用本地存储作为备份
+                const localData = localStorage.getItem('learning_history');
+                if (localData) {
+                    allData = JSON.parse(localData);
+                    renderStats();
+                    renderCalendar();
+                    renderHistory();
+                    renderTrendChart();
+                    renderWeakAnalysis();
+                }
+            }
+        }
+
+        // 渲染统计
+        function renderStats() {
+            const entries = Object.entries(allData);
+            const totalDays = entries.length;
+            let totalQ = 0, totalC = 0;
+
+            entries.forEach(([_, data]) => {
+                totalQ += data.total || 10;
+                totalC += data.score || 0;
+            });
+
+            document.getElementById('totalDays').textContent = totalDays;
+            document.getElementById('totalQuestions').textContent = totalQ;
+            document.getElementById('totalCorrect').textContent = totalC;
+            document.getElementById('avgScore').textContent = totalQ > 0 ? Math.round((totalC / totalQ) * 100) + '%' : '0%';
+        }
+
+        // 渲染日历
+        function renderCalendar() {
+            const calendar = document.getElementById('calendar');
+            const year = currentMonth.getFullYear();
+            const month = currentMonth.getMonth();
+            
+            document.getElementById('currentMonth').textContent = `${year}年${month + 1}月`;
+
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const today = new Date();
+
+            let html = '';
+            const dayNames = ['日', '一', '二', '三', '四', '五', '六'];
+            dayNames.forEach(day => {
+                html += `<div class="calendar-header">${day}</div>`;
+            });
+
+            // 空白填充
+            for (let i = 0; i < firstDay; i++) {
+                html += '<div class="calendar-day empty"></div>';
+            }
+
+            // 日期
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                const hasData = allData[dateStr];
+                const isToday = today.getFullYear() === year && today.getMonth() === month && today.getDate() === day;
+                const isSelected = selectedDate === dateStr;
+                
+                let classes = 'calendar-day';
+                if (hasData) classes += ' has-data';
+                if (isToday) classes += ' today';
+                if (isSelected) classes += ' selected';
+
+                html += `<div class="${classes}" onclick="selectDate('${dateStr}')">${day}${hasData ? '<br>✓' : ''}</div>`;
+            }
+
+            calendar.innerHTML = html;
+        }
+
+        // 选择日期
+        function selectDate(dateStr) {
+            selectedDate = dateStr;
+            renderCalendar();
+            
+            if (allData[dateStr]) {
+                showDetail(dateStr, allData[dateStr]);
+            }
+        }
+
+        // 切换月份
+        function changeMonth(delta) {
+            currentMonth.setMonth(currentMonth.getMonth() + delta);
+            renderCalendar();
+        }
+
+        // 显示详情
+        function showDetail(date, data) {
+            const panel = document.getElementById('detailPanel');
+            const title = document.getElementById('detailTitle');
+            const content = document.getElementById('detailContent');
+
+            panel.style.display = 'block';
+            title.textContent = `📋 ${date} 答题详情`;
+
+            const androidScore = data.android ? `${data.android.score}/${data.android.total}` : '-';
+            const englishScore = data.english ? `${data.english.score}/${data.english.total}` : '-';
+            const percent = Math.round((data.score / (data.total || 10)) * 100);
+
+            content.innerHTML = `
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 20px;">
+                    <div style="background: #e3f2fd; padding: 15px; border-radius: 10px; text-align: center;">
+                        <div style="font-size: 2em; font-weight: bold; color: #1976d2;">${data.score}/${data.total || 10}</div>
+                        <div>总分</div>
+                    </div>
+                    <div style="background: #e8f5e9; padding: 15px; border-radius: 10px; text-align: center;">
+                        <div style="font-size: 2em; font-weight: bold; color: #388e3c;">${androidScore}</div>
+                        <div>Android</div>
+                    </div>
+                    <div style: "background: #fff3e0; padding: 15px; border-radius: 10px; text-align: center;">
+                        <div style="font-size: 2em; font-weight: bold; color: #f57c00;">${englishScore}</div>
+                        <div>英语</div>
+                    </div>
+                    <div style="background: #fce4ec; padding: 15px; border-radius: 10px; text-align: center;">
+                        <div style="font-size: 2em; font-weight: bold; color: #c62828;">${percent}%</div>
+                        <div>正确率</div>
+                    </div>
+                </div>
+                <p style="color: #666; text-align: center;">答题时间：${data.timestamp ? new Date(data.timestamp).toLocaleString('zh-CN') : '未知'}</p>
+            `;
+
+            panel.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // 渲染历史列表
+        function renderHistory(filter = 'all') {
+            const list = document.getElementById('historyList');
+            let entries = Object.entries(allData).sort((a, b) => b[0].localeCompare(a[0]));
+
+            if (filter === 'high') {
+                entries = entries.filter(([_, d]) => (d.score / (d.total || 10)) >= 0.8);
+            } else if (filter === 'mid') {
+                entries = entries.filter(([_, d]) => {
+                    const r = d.score / (d.total || 10);
+                    return r >= 0.6 && r < 0.8;
+                });
+            } else if (filter === 'low') {
+                entries = entries.filter(([_, d]) => (d.score / (d.total || 10)) < 0.6);
+            }
+
+            if (entries.length === 0) {
+                list.innerHTML = '<div class="empty-state">暂无学习记录</div>';
+                return;
+            }
+
+            list.innerHTML = entries.map(([date, data]) => {
+                const total = data.total || 10;
+                const percent = Math.round((data.score / total) * 100);
+                let scoreClass = 'score-high';
+                if (percent < 60) scoreClass = 'score-low';
+                else if (percent < 80) scoreClass = 'score-mid';
+
+                return `
+                    <div class="history-item" onclick="selectDate('${date}')">
+                        <div>
+                            <div class="history-date">${date}</div>
+                            <div style="font-size: 0.85em; color: #666;">Android: ${data.android ? data.android.score + '/' + data.android.total : '-'} | 英语: ${data.english ? data.english.score + '/' + data.english.total : '-'}</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div class="history-score ${scoreClass}">${data.score}/${total}</div>
+                            <div>${percent}%</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // 筛选历史
+        function filterHistory(filter) {
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            renderHistory(filter);
+        }
+
+        // 渲染趋势图
+        function renderTrendChart() {
+            const chart = document.getElementById('trendChart');
+            const entries = Object.entries(allData).sort((a, b) => a[0].localeCompare(b[0])).slice(-7);
+
+            if (entries.length === 0) {
+                chart.innerHTML = '<div class="empty-state">暂无数据</div>';
+                return;
+            }
+
+            const maxScore = Math.max(...entries.map(([_, d]) => d.total || 10));
+
+            chart.innerHTML = entries.map(([date, data]) => {
+                const total = data.total || 10;
+                const height = (data.score / maxScore) * 200;
+                const dateObj = new Date(date);
+                const label = `${dateObj.getMonth() + 1}/${dateObj.getDate()}`;
+
+                return `
+                    <div class="chart-bar">
+                        <div class="bar-value">${data.score}/${total}</div>
+                        <div class="bar" style="height: ${height}px; background: linear-gradient(to top, #667eea, #764ba2);"></div>
+                        <div class="bar-label">${label}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // 渲染薄弱环节分析
+        function renderWeakAnalysis() {
+            const container = document.getElementById('weakAnalysis');
+            const entries = Object.values(allData);
+
+            if (entries.length < 2) {
+                container.innerHTML = '<div class="empty-state">需要更多数据才能分析</div>';
+                return;
+            }
+
+            // 分析 Android 和英语的平均分
+            let androidTotal = 0, androidCorrect = 0;
+            let englishTotal = 0, englishCorrect = 0;
+
+            entries.forEach(d => {
+                if (d.android) {
+                    androidTotal += d.android.total || 5;
+                    androidCorrect += d.android.score || 0;
+                }
+                if (d.english) {
+                    englishTotal += d.english.total || 5;
+                    englishCorrect += d.english.score || 0;
+                }
+            });
+
+            const androidAvg = androidTotal > 0 ? Math.round((androidCorrect / androidTotal) * 100) : 0;
+            const englishAvg = englishTotal > 0 ? Math.round((englishCorrect / englishTotal) * 100) : 0;
+
+            const weakSubject = androidAvg < englishAvg ? 'Android' : '英语';
+            const weakScore = Math.min(androidAvg, englishAvg);
+
+            container.innerHTML = `
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div style="background: ${androidAvg >= 80 ? '#e8f5e9' : '#fff3cd'}; padding: 20px; border-radius: 10px; text-align: center;">
+                        <div style="font-size: 2em; font-weight: bold; color: ${androidAvg >= 80 ? '#388e3c' : '#f57c00'};">${androidAvg}%</div>
+                        <div>📱 Android 平均正确率</div>
+                    </div>
+                    <div style="background: ${englishAvg >= 80 ? '#e8f5e9' : '#fff3cd'}; padding: 20px; border-radius: 10px; text-align: center;">
+                        <div style="font-size: 2em; font-weight: bold; color: ${englishAvg >= 80 ? '#388e3c' : '#f57c00'};">${englishAvg}%</div>
+                        <div>📖 英语 平均正确率</div>
+                    </div>
+                </div>
+                <div style="margin-top: 15px; padding: 15px; background: #f8f9fa; border-radius: 10px;">
+                    <strong>💡 学习建议：</strong>
+                    <p style="margin-top: 10px; color: #666;">
+                        ${weakScore >= 80 ? '🎉 表现优秀！继续保持！' : 
+                          weakScore >= 60 ? `⚠️ ${weakSubject}需要加强，建议多复习相关知识点` : 
+                          `🔴 ${weakSubject}薄弱，建议重点学习并增加练习量`}
+                    </p>
+                </div>
+            `;
+        }
+
+        // 导出数据
+        function exportData() {
+            const dataStr = JSON.stringify(allData, null, 2);
+            const blob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `learning_data_${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // 初始化
+        loadAllData();
+    </script>
+</body>
+</html>
