@@ -1,26 +1,26 @@
 {
-    "date": "2026-06-08",
+    "date": "2026-06-09",
     "questions": [
         {
-            "title": "协程的取消与结构化并发",
-            "content": "请解释 Kotlin 协程中结构化并发（Structured Concurrency）的含义。如果一个父协程被取消，子协程会发生什么？在实际开发中，如何确保网络请求在 Activity/Fragment 销毁时被正确取消？",
-            "code": "",
-            "answer": "结构化并发是指协程之间存在父子层级关系，子协程的生命周期受父协程约束。当父协程被取消时，所有子协程也会被递归取消。\n\n在 Android 中，通常通过以下方式确保请求被正确取消：\n\n1. 使用 viewModelScope.launch 启动协程，ViewModel 销毁时自动取消\n2. 使用 lifecycleScope.launch 绑定 Activity/Fragment 生命周期\n3. 对于 Retrofit 网络请求，返回值使用 suspend 函数，取消协程时会抛出 CancellationException 中断挂起函数\n4. 使用 supervisorScope 区分失败传播策略：子协程失败不影响兄弟协程",
-            "explanation": "结构化并发是 Kotlin 协程的核心设计理念之一。与 GlobalScope.launch 不同，使用作用域内的 launch/async 创建的协程会形成父子关系。当调用父协程的 cancel() 时，CancellationException 会沿协程树向下传播，所有子协程的挂起点（如 delay、withContext、Retrofit suspend 调用）都会检测到取消并抛出异常。在 Android 中，viewModelScope 和 lifecycleScope 内部封装了 Job 的生命周期管理，是推荐的做法。"
+            "title": "Compose Recomposition 机制与稳定性",
+            "content": "请解释 Jetpack Compose 的 Recomposition（重组）机制。当一个 Composable 函数的参数类型是自定义 data class 时，为什么可能导致不必要的重组？如何利用 @Stable 和 @Immutable 注解来优化？",
+            "code": "data class UserInfo(val name: String, val age: Int)\n\n@Composable\nfun UserCard(user: UserInfo) {\n    Text(text = user.name)\n}\n\n// 使用处\nval user = remember { UserInfo(\"Alice\", 25) }\nUserCard(user = user)",
+            "answer": "Compose 编译器在 Recomposition 时通过 equals() 判断参数是否变化来决定是否跳过重组。对于 data class，虽然有自动生成的 equals()，但 Compose 编译器无法在编译期确定其稳定性（因为 data class 可能包含 lambda 或可变属性），因此每次都可能触发重组。\n\n解决方案：\n1. 使用 @Immutable 注解：承诺该类的所有属性都不会改变，编译器可以安全地用 equals() 做比较跳过重组。\n2. 使用 @Stable 注解：承诺如果属性变化会触发 State 更新（更宽松的约束）。\n3. 将 data class 替换为 Kotlin value class 或基本类型。",
+            "explanation": "Compose 的智能重组（Intelligent Recomposition）依赖于参数稳定性推断。编译器会检查：\n- 所有公开属性是否为不可变类型\n- 是否实现了稳定的 equals()\n- 是否为接口/抽象类\n\n如果无法确认为 Stable，Compose 保守地认为参数可能变化，不跳过该 Composable 的重组。@Stable/@Immutable 是给编译器的承诺，打破承诺会导致 UI 不更新的 bug。"
         },
         {
-            "title": "Dispatchers 切换与线程池原理",
-            "content": "Kotlin 协程中 Dispatchers.Main、Dispatchers.IO、Dispatchers.Default 各自对应什么线程池？在协程中频繁切换 Dispatcher 会带来什么性能问题？请结合 withContext 的使用场景分析。",
-            "code": "viewModelScope.launch(Dispatchers.Main) {\n    val user = withContext(Dispatchers.IO) {\n        repository.fetchUser() // 网络请求\n    }\n    val avatar = withContext(Dispatchers.IO) {\n        repository.downloadAvatar(user.avatarUrl) // 下载图片\n    }\n    withContext(Dispatchers.Default) {\n        processImage(avatar) // CPU 密集型处理\n    }\n    updateUI(user, avatar) // 回到主线程\n}",
-            "answer": "各 Dispatcher 对应的线程池：\n- Dispatchers.Main：绑定 Android 主线程（UI 线程），内部通过 Handler 调度\n- Dispatchers.IO：共享的弹性线程池，默认最多 64 个线程，适合阻塞式 I/O 操作\n- Dispatchers.Default：线程数等于 CPU 核心数的固定线程池，适合 CPU 密集型计算\n\n频繁切换 Dispatcher 的性能问题：\n1. 每次 withContext 调用都涉及线程切换，需要将任务分派到目标线程池的队列\n2. 如果任务本身很轻量（如简单的数据库查询），线程切换的开销可能超过任务本身的开销\n3. 频繁在 IO 和 Main 之间切换会导致大量上下文切换，增加 CPU 调度开销\n\n优化建议：将多个需要在同一线程上执行的操作合并到同一个 withContext 块中，减少不必要的切换。",
-            "explanation": "理解 Dispatcher 的底层线程池对于性能优化至关重要。IO 和 Default 共享的底层线程池设计（limitedParallelism API）可以防止 IO 线程饥饿导致 Default 任务也被阻塞。在实际开发中，应该避免在循环中频繁调用 withContext 切换线程，而应该将需要在 IO 线程上执行的多个操作聚合到一个 withContext(Dispatchers.IO) 块中。"
+            "title": "LaunchedEffect 与 rememberCoroutineScope 的区别",
+            "content": "在 Compose 中，LaunchedEffect 和 rememberCoroutineScope 都可以启动协程，它们的区别是什么？各自适用于什么场景？如果在 onClick 回调中直接使用 LaunchedEffect 会出现什么问题？",
+            "code": "// ❌ 错误示例：在回调中使用 LaunchedEffect\nButton(onClick = {\n    LaunchedEffect(Unit) {\n        // 编译错误！LaunchedEffect 只能在 Composable 顶层调用\n        viewModel.loadData()\n    }\n})\n\n// ✅ 正确做法\nval scope = rememberCoroutineScope()\nButton(onClick = {\n    scope.launch {\n        viewModel.loadData()\n    }\n})",
+            "answer": "区别：\n\nLaunchedEffect:\n- 是一个 Composable 函数，只能在组合上下文中调用\n- 生命周期绑定到其所在组件，组件从组合中移除时协程自动取消\n- 通常传入 key，key 变化时取消旧协程并重新启动\n- 适合：响应状态变化执行副作用（如加载数据、播放动画）\n\nrememberCoroutineScope:\n- 返回一个 CoroutineScope，绑定到当前组件的生命周期\n- 可以在非 Composable 上下文（如回调函数）中使用\n- 组件离开组合时自动取消\n- 适合：在事件回调中启动协程（如点击、手势）",
+            "explanation": "核心区别在于使用上下文：\n- LaunchedEffect 是「声明式」的副作用，跟随组合流程自动执行\n- rememberCoroutineScope 是「命令式」的，由事件驱动手动启动\n\nLaunchedEffect 必须在 Composable 函数的顶层调用，因为它内部使用了 SideEffect 相关的 API，不能嵌套在 lambda 中。这也是 Compose 副作用 API 的设计原则：副作用应该是声明式的，由状态驱动，而非事件驱动。"
         },
         {
-            "title": "Mutex vs synchronized 与协程安全",
-            "content": "在协程环境中，为什么不能直接使用 Java 的 synchronized 关键字来保护共享状态？请说明 Kotlin 协程中 Mutex 的使用方式，以及它与 synchronized 的本质区别。",
-            "code": "// 错误示例：在协程中使用 synchronized\nclass Counter {\n    private var count = 0\n    suspend fun increment() {\n        synchronized(this) { // 问题：阻塞了协程所在的线程\n            count++\n        }\n    }\n}\n\n// 正确示例：使用 Mutex\nclass SafeCounter {\n    private var count = 0\n    private val mutex = Mutex()\n    suspend fun increment() {\n        mutex.withLock {\n            count++\n        }\n    }\n}",
-            "answer": "synchronized 是 JVM 级别的线程锁，它会阻塞（block）当前线程。在协程环境中，多个协程可能运行在同一个线程上，如果一个协程用 synchronized 持有锁并挂起（如调用 delay 或其他 suspend 函数），会导致：\n1. 该线程被阻塞，同线程上的其他协程也无法执行\n2. 可能导致死锁，因为被阻塞的线程上的其他协程可能正等待获取同一把锁\n\nMutex 的本质区别：\n- Mutex 是协程级别的锁，当锁被占用时，等待的协程会被挂起（suspend）而非阻塞线程\n- 挂起的协程会释放其占用的线程资源，让同线程上的其他协程继续执行\n- Mutex.withLock 是 suspend 函数，只能在协程中调用\n\n注意事项：Mutex 保护的是协程之间而非线程之间的并发，如果共享状态被非协程代码访问（如回调），仍需要额外的线程安全措施。",
-            "explanation": "这是协程并发编程中的经典陷阱。关键理解点是「挂起不等于阻塞」：挂起是协作式的，协程主动释放线程；阻塞是抢占式的，线程被占用无法做其他事。在协程中混用 synchronized 可能导致线程饥饿和死锁。Mutex 通过 suspend/resume 机制实现了协程感知的互斥锁，推荐在需要协程级别的互斥时使用。另外，对于简单的原子操作（如计数器），AtomicInt 等无锁方案更高效。"
+            "title": "Compose 中的 State 提升与单向数据流",
+            "content": "解释 Compose 中 State Hoisting（状态提升）的原理和优势。在一个包含搜索框和搜索结果列表的页面中，如何正确应用状态提升来设计组件层次？请对比「状态在子组件内部」和「状态提升到父组件」两种方案的优劣。",
+            "code": "// 方案A：状态在子组件内部（耦合）\n@Composable\nfun SearchScreen(viewModel: SearchViewModel) {\n    SearchBar() // 内部管理搜索文字\n    ResultList() // 内部管理列表数据\n}\n\n// 方案B：状态提升（推荐）\n@Composable\nfun SearchScreen(viewModel: SearchViewModel) {\n    val query by viewModel.query.collectAsState()\n    val results by viewModel.results.collectAsState()\n    \n    SearchBar(\n        query = query,\n        onQueryChange = { viewModel.updateQuery(it) }\n    )\n    ResultList(results = results)\n}",
+            "answer": "State Hoisting 是将子组件的状态「提升」到父组件管理的设计模式，核心原则：\n- 状态下沉（State goes down）\n- 事件上浮（Events go up）\n- 组件成为无状态的（stateless）\n\n优势：\n1. 单一数据源（Single Source of Truth）：避免状态不一致\n2. 可测试性：无状态组件只需传参即可测试\n3. 可复用性：组件不依赖特定状态管理方式\n4. 可预览性：Preview 时直接传入数据即可\n\n对比：\n- 方案A：组件间无法共享状态，搜索文字变化时 ResultList 无法感知\n- 方案B：父组件统一管理，query 变化自动驱动 ResultList 更新，符合单向数据流",
+            "explanation": "State Hoisting 的本质是函数式编程思想：将组件视为纯函数，输入（参数）决定输出（UI）。\n\n最佳实践：\n- 状态应提升到「需要该状态的最近共同祖先」\n- 不要过度提升：如果状态只在一个组件中使用，不需要提升\n- ViewModel + StateFlow 是推荐的状态持有者，生命周期安全\n\nCompose 的响应式模型天然支持单向数据流：状态变化 → 组合函数重新执行 → UI 更新，形成可预测的循环。"
         }
     ]
 }
